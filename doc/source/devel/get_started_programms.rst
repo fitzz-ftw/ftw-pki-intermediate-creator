@@ -24,7 +24,7 @@
 
 >>> cmd_line="--conf_file ca_root_conf.toml -ST Mystate --commonName 'Fitzz Reinshagen' "
 >>> cmd_line += " -k reinsha.key.pem -p reinsha.pub.pem "
->>> cmd_line += " --privatdir privat"
+>>> cmd_line += " --private-dir privat"
 >>> cmd_line += " testpasswd"
 
 >>> import shlex
@@ -35,7 +35,7 @@
  '--commonName', 'Fitzz Reinshagen',
  '-k', 'reinsha.key.pem',
  '-p', 'reinsha.pub.pem', 
- '--privatdir', 'privat',
+ '--private-dir', 'privat',
  'testpasswd']
 
 ..!SECTION
@@ -44,7 +44,7 @@
 
 .. SECTION - Configuration
 
->>> from ftwpki.baselibs.utils import toml2dn
+>>> from ftwpki.baselibs.toml_utils import toml2dn
 >>> from ftwpki.intermed.cli_parser import CSRIntermediateParser
 
 >>> ca_parser = CSRIntermediateParser(prog="ftwpkicsrinter")
@@ -78,7 +78,7 @@ Namespace(passphrasefile='testpasswd',
 >>> pwd_man
 PasswordManager(private_dir='privat')
 
->>> from ftwpki.baselibs.request import CertificateRequset
+>>> from ftwpki.baselibs.request import CertificateRequest
 >>> from ftwpki.baselibs.policies import IntermediatePolicy
 >>> from ftwpki.baselibs.core import (
 ...         create_distinguished_name,
@@ -98,13 +98,13 @@ PasswordManager(private_dir='privat')
 
 
 
->>> reins_csr = CertificateRequset(
+>>> reins_csr = CertificateRequest(
 ...     subject = subject,
 ...     policy = IntermediatePolicy(),
 ... )
 
 >>> reins_csr #doctest: +NORMALIZE_WHITESPACE
-CertificateRequset(subject=<Name(C=DE,ST=Mystate,L=Somewherecity,O=Fitzz TeXnik Welt,OU=Security,CN=Fitzz Reinshagen)>)
+CertificateRequest(subject=<Name(C=DE,ST=Mystate,L=Somewherecity,O=Fitzz TeXnik Welt,OU=Security,CN=Fitzz Reinshagen)>)
 
 >>> priv, pub = generate_rsa_key_pair(passphrase=pwd_man.decrypt_password_file(
 ...         encrypted_filename= args.passphrasefile,

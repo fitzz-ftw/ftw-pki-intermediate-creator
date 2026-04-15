@@ -21,8 +21,8 @@ from ftwpki.baselibs.core import (
 )
 from ftwpki.baselibs.passwd import PasswordManager
 from ftwpki.baselibs.policies import IntermediatePolicy
-from ftwpki.baselibs.request import CertificateRequset
-from ftwpki.baselibs.utils import toml2dn
+from ftwpki.baselibs.request import CertificateRequest
+from ftwpki.baselibs.toml_utils import toml2dn
 from ftwpki.intermed.cli_parser import CSRIntermediateParser
 
 
@@ -41,7 +41,7 @@ def prog_intermediate_csr(argv:list[str]|None=None) ->int:
                  organizational_unit=args.organizationalUnitName,
              )
 
-        reins_csr = CertificateRequset(
+        reins_csr = CertificateRequest(
                              subject = subject,
                              policy = IntermediatePolicy(),
                          )

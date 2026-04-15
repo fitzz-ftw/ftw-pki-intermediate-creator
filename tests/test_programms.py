@@ -24,7 +24,7 @@ def test_prog_intermediate_csr_success(tmp_path):
         "Test-City",
         "--commonName",
         "Test Intermediate",
-        "--privatdir",
+        "--private-dir",
         str(priv_dir),
         "-k",
         key_file,
@@ -85,7 +85,7 @@ def test_prog_intermediate_csr_error(tmp_path):
         "Test-City",
         "--commonName",
         "Test Intermediate",
-        "--privatdir",
+        "--private-dir",
         str(priv_dir),
         "testpasswd.txt",
     ]
