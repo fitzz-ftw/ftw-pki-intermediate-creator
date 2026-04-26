@@ -1,3 +1,5 @@
+The Certificat ASign Request Creation
+#########################################
 
 
 
@@ -104,7 +106,7 @@ PasswordManager(private_dir='privat')
 ... )
 
 >>> reins_csr #doctest: +NORMALIZE_WHITESPACE
-CertificateRequest(subject=<Name(C=DE,ST=Mystate,L=Somewherecity,O=Fitzz TeXnik Welt,OU=Security,CN=Fitzz Reinshagen)>)
+CertificateRequest(subject=<Name(CN=Fitzz Reinshagen,OU=Security,O=Fitzz TeXnik Welt,L=Somewherecity,ST=Mystate,C=DE)>)
 
 >>> priv, pub = generate_rsa_key_pair(passphrase=pwd_man.decrypt_password_file(
 ...         encrypted_filename= args.passphrasefile,
