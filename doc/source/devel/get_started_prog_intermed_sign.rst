@@ -32,6 +32,7 @@ The Signing Intermediate Programm
 >>> cmd_line += " -k privat/reinsha.key.pem "
 >>> cmd_line += " --private-dir privat"
 >>> cmd_line += " --policy-name standalone"
+>>> cmd_line += " -t standalone"
 >>> cmd_line += " -c Fitzz-TeXnik-WeltSomewherecity.crt"
 >>> cmd_line += " testpasswd"
 >>> cmd_line += " node-01.csr"
@@ -43,6 +44,7 @@ The Signing Intermediate Programm
  '-k', 'privat/reinsha.key.pem', 
  '--private-dir', 'privat', 
  '--policy-name', 'standalone',
+ '-t', 'standalone',
  '-c', 'Fitzz-TeXnik-WeltSomewherecity.crt',
  'testpasswd',
  'node-01.csr']
@@ -71,7 +73,8 @@ Namespace(countryName='match',
     organizationName='match', 
     organizationalUnitName='optional', 
     commonName='supplied', 
-    policy_name='standalone', 
+    policy_name='standalone',
+    policy_type='standalone', 
     conf_file=...Path('intermed_conf.toml'), 
     private_key='privat/reinsha.key.pem', 
     private_dir='privat',
@@ -211,7 +214,7 @@ Enter Password:
 ...       "server": ServerPolicy(),
 ...       }
 
->>> policy = policy_select[args.policy_name]
+>>> policy = policy_select[args.policy_type]
 
 >>> policy
 StandalonePolicy()
@@ -249,6 +252,7 @@ StandalonePolicy()
 >>> zipped_data = encrypt_transport_package(
 ...     signed_cert, # user_cert
 ...     ca_cert, # root_ca_cert
+...     private_key_obj,
 ...     signed_cert, # recipient_cert
 ...     signed_cert,
 ...     ca_cert,

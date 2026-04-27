@@ -132,7 +132,8 @@ def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
 
         # SECTION - Passwordhandling
         pwd_man = PasswordManager(private_dir=args.private_dir)
-        pass_phrase = pwd_man.decrypt_password_file(args.passphrasefile, getpass.getpass("Enter Password:"))
+        pass_phrase = pwd_man.decrypt_password_file(args.passphrasefile, 
+                                                    getpass.getpass("Enter Password:"))
         
         # !SECTION - Passwordhandling
         # SECTION - Signing
@@ -163,6 +164,7 @@ def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
         zipped_data = encrypt_transport_package(
             signed_cert,  # user_cert
             ca_cert,  # root_ca_cert
+            private_key_obj,
             signed_cert,  # recipient_cert
             signed_cert,
             ca_cert,
