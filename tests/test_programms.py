@@ -150,7 +150,8 @@ def test_prog_intermed_sign_path_length_error(mocker):
     mock_args.policy_name = "intermediate"
     mock_args.path_length = 5
     mock_args.certificate = "fake_ca.crt"
-    mocker.patch("ftwpki.intermed.programms.CSRSigningParser.parse_args", return_value=mock_args)
+    mocker.patch("ftwpki.intermed.programms.CSRMultiSigningParser.parse_args", 
+                 return_value=mock_args)
 
     # 2. Mocke das Laden des Zertifikats und simuliere eine zu kleine Path Length (z.B. 2)
     mock_cert = mocker.Mock()
@@ -174,7 +175,7 @@ def test_prog_intermediate_sign_validation_error(mocker):
     mock_val.return_value.validate.return_value.errors = ["Country mismatch"]
 
     # Mocke das Drumherum (Parser etc.), damit keine echten Files geladen werden
-    mocker.patch("ftwpki.intermed.programms.CSRSigningParser.parse_args")
+    mocker.patch("ftwpki.intermed.programms.CSRMultiSigningParser.parse_args")
     mocker.patch("ftwpki.intermed.programms.load_certificate_from_pem")
     mocker.patch("pathlib.Path.read_bytes", return_value=b"data")
 
@@ -185,7 +186,8 @@ def test_prog_intermediate_sign_validation_error(mocker):
 def test_prog_intermediate_sign_path_length_too_deep(mocker):
     # Mocke args: policy ist intermediate, gewollte Länge ist 5
     mock_args = mocker.Mock(policy_name="intermediate", path_length=5, certificate="ca.crt")
-    mocker.patch("ftwpki.intermed.programms.CSRSigningParser.parse_args", return_value=mock_args)
+    mocker.patch("ftwpki.intermed.programms.CSRMultiSigningParser.parse_args", 
+                 return_value=mock_args)
 
     # Mocke CA-Zertifikat mit einer REST-Länge von nur 2
     mock_cert = mocker.Mock()
@@ -205,7 +207,7 @@ def test_prog_intermediate_sign_general_exception(mocker):
     )
 
     # Restliches Setup minimal halten
-    mocker.patch("ftwpki.intermed.programms.CSRSigningParser.parse_args")
+    mocker.patch("ftwpki.intermed.programms.CSRMultiSigningParser.parse_args")
     # ... weitere nötige Mocks ...
 
 
@@ -213,13 +215,13 @@ def test_prog_intermediate_sign_general_exception(mocker):
 
 def test_prog_intermediate_sign_interrupt(mocker):
     mocker.patch(
-        "ftwpki.intermed.programms.CSRSigningParser.parse_args", side_effect=KeyboardInterrupt
+        "ftwpki.intermed.programms.CSRMultiSigningParser.parse_args", side_effect=KeyboardInterrupt
     )
     assert prog_intermediate_sign([]) == 1
 
 def test_prog_intermediate_sign_exception(mocker):
     mocker.patch(
-        "ftwpki.intermed.programms.CSRSigningParser.parse_args",
+        "ftwpki.intermed.programms.CSRMultiSigningParser.parse_args",
         side_effect=RuntimeError("Unerwarteter Fehler"),
     )
     assert prog_intermediate_sign([]) == 1
@@ -230,13 +232,15 @@ def test_prog_intermediate_sign_full_flow(mocker):
     mock_args.certificate = "ca.crt"
     mock_args.certificat_sign_request = "test.csr"
     mock_args.policy_name = "standalone"
+    mock_args.policy_type = "standalone"
     mock_args.policy = {"CN": "match"}
     mock_args.private_dir = "privat"
     mock_args.passphrasefile = "pw.enc"
     mock_args.private_key = "ca.key"
     mock_args.validity_days = 365
 
-    mocker.patch("ftwpki.intermed.programms.CSRSigningParser.parse_args", return_value=mock_args)
+    mocker.patch("ftwpki.intermed.programms.CSRMultiSigningParser.parse_args", 
+                 return_value=mock_args)
     mocker.patch("ftwpki.intermed.programms.toml2dn_policy", return_value={})
     mocker.patch("ftwpki.intermed.programms.toml2ext_policy", return_value={})
 
@@ -272,7 +276,7 @@ def test_prog_intermediate_sign_full_flow(mocker):
 
 def test_prog_intermediate_sign_validation_fails(mocker):
     # 1. Setup: Mocks für die Infrastruktur (Parser, Path, etc.)
-    mocker.patch("ftwpki.intermed.programms.CSRSigningParser.parse_args")
+    mocker.patch("ftwpki.intermed.programms.CSRMultiSigningParser.parse_args")
     mocker.patch("ftwpki.intermed.programms.toml2dn_policy", return_value={})
     mocker.patch("ftwpki.intermed.programms.toml2ext_policy", return_value={})
     mocker.patch("ftwpki.intermed.programms.load_certificate_from_pem")

@@ -15,7 +15,7 @@ from pathlib import Path
 
 from cryptography import x509
 
-from ftwpki.baselibs.cli_parser import CSRSigningParser, cast
+from ftwpki.baselibs.cli_parser import CSRMultiSigningParser, cast
 from ftwpki.baselibs.core import (
     create_csr_name,
     create_distinguished_name,
@@ -103,7 +103,7 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
 def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
     try:
         # SECTION - Configuration
-        ca_parser = CSRSigningParser()
+        ca_parser = CSRMultiSigningParser()
         ca_parser.set_defaults(**toml2dn_policy(argv))
         extention = toml2ext_policy(argv)
         args = ca_parser.parse_args(argv)
@@ -150,7 +150,7 @@ def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
             "client": ClientPolicy(),
             "server": ServerPolicy(),
             }
-        policy = policy_select[args.policy_name]
+        policy = policy_select[args.policy_type]
         validity_days = validate_and_clamp_validity(ca_cert, args.validity_days)
 
         signed_cert = cert_signer.sign(csr=csr, 
@@ -169,7 +169,7 @@ def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
             signed_cert,
             ca_cert,
         )
-        transfer_file_path = Path(args.certificat_sign_request).with_suffix(".zip.enc")
+        transfer_file_path:Path = Path(args.certificat_sign_request).with_suffix(".zip.enc")
         transfer_file_path.write_bytes(zipped_data)
         # !SECTION - Transferfile
         return 0

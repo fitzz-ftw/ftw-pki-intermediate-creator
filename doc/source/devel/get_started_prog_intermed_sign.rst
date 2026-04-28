@@ -58,9 +58,9 @@ The Signing Intermediate Programm
 .. SECTION - Configuration
 
 >>> from ftwpki.baselibs.toml_utils import toml2dn_policy, toml2ext_policy
->>> from ftwpki.baselibs.cli_parser import CSRSigningParser
+>>> from ftwpki.baselibs.cli_parser import CSRMultiSigningParser
 
->>> ca_parser = CSRSigningParser(prog="ftwpkicasign")
+>>> ca_parser = CSRMultiSigningParser(prog="ftwpkicasign")
 
 >>> ca_parser.set_defaults(**toml2dn_policy(sys_argv))
 >>> extention = toml2ext_policy(sys_argv)
@@ -74,7 +74,6 @@ Namespace(countryName='match',
     organizationalUnitName='optional', 
     commonName='supplied', 
     policy_name='standalone',
-    policy_type='standalone', 
     conf_file=...Path('intermed_conf.toml'), 
     private_key='privat/reinsha.key.pem', 
     private_dir='privat',
@@ -83,6 +82,7 @@ Namespace(countryName='match',
     path_length=0, 
     passphrasefile='testpasswd',
     certificat_sign_request='node-01.csr',
+    policy_type='standalone', 
     policy={'countryName': 'match', 
         'stateOrProvinceName': 'supplied', 
         'localityName': 'optional', 
