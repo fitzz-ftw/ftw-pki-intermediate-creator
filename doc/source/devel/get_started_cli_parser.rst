@@ -14,8 +14,7 @@ CSRIntermediateParser(prog=...,
     add_help=True)
 
 >>> cip.parse_args(["passwort.txt"]) #doctest: +NORMALIZE_WHITESPACE
-Namespace(passphrasefile='passwort.txt',
-    countryName='', 
+Namespace(countryName='', 
     stateOrProvinceName='', 
     localityName='', 
     organizationName='', 
@@ -25,11 +24,11 @@ Namespace(passphrasefile='passwort.txt',
     conf_file=None, 
     private_key='', 
     public_key='', 
-    privatdir='')
+    privatdir='',
+    passphrasefile='passwort.txt')
 
 >>> cip.parse_args(["-subj", "/CN=Test" ,"passwort.txt"]) #doctest: +NORMALIZE_WHITESPACE
-Namespace(passphrasefile='passwort.txt',
-    countryName='', 
+Namespace(countryName='', 
     stateOrProvinceName='', 
     localityName='', 
     organizationName='', 
@@ -39,5 +38,6 @@ Namespace(passphrasefile='passwort.txt',
     conf_file=None, 
     private_key='',
     public_key='', 
-    privatdir='')
+    privatdir='',
+    passphrasefile='passwort.txt')
 
