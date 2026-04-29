@@ -6,8 +6,7 @@
 programms
 ===============================
 
-
-Modul programms documentation
+Main entry points for Intermediate CA operations. (rw)
 """
 
 import getpass
@@ -43,12 +42,16 @@ from ftwpki.baselibs.toml_utils import (
 )
 from ftwpki.baselibs.transport import encrypt_transport_package
 from ftwpki.baselibs.validate import ValidatorDN, validate_and_clamp_validity
-from ftwpki.intermed.cli_parser import (
-    CSRIntermediateParser,
-)
+from ftwpki.intermed.cli_parser import CSRIntermediateParser
 
 
 def prog_intermediate_csr(argv: list[str] | None = None) -> int:
+    """
+    Main entry point for generating an Intermediate CA CSR. (rw)
+
+    :param argv: Optional list of command-line arguments.
+    :returns: Exit code (0 for success, 1 for error).
+    """
     try:
         ca_parser = CSRIntermediateParser(prog="ftwpkicsrinter")
         ca_parser.set_defaults(**toml2dn(argv))
@@ -90,7 +93,6 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
             Path(create_csr_name(args.organizationName, args.localityName)),
             is_private=False,
         )
-
         return 0
     except KeyboardInterrupt:
         return 1
@@ -101,6 +103,13 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
 
 # SECTION - Programm Signing
 def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
+    """
+    Entry point for signing requests using an Intermediate CA. (rw)
+
+    :param argv: Optional list of command-line arguments.
+    :param kwargs: Additional signing options.
+    :returns: Exit code (0 for success, 1 for error).
+    """
     try:
         # SECTION - Configuration
         ca_parser = CSRMultiSigningParser()
@@ -108,17 +117,17 @@ def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
         extention = toml2ext_policy(argv)
         args = ca_parser.parse_args(argv)
         # !SECTION - Configuration
+
         # SECTION - Validating
         ca_cert = load_certificate_from_pem(pem_data=Path(args.certificate).read_bytes())
         current_path_length = cast(
             int, ca_cert.extensions.get_extension_for_class(x509.BasicConstraints).value.path_length
         )
         if args.policy_name == "intermediate" and current_path_length <= args.path_length:
-            print(f"Path length to heigh: {current_path_length}")
+            print(f"Path length too high: {current_path_length}")
             return 1
 
         csr = load_csr_from_pem(Path(args.certificat_sign_request).read_bytes())
-
         val_dn = ValidatorDN(args.policy, get_subject_dict(ca_cert))
         validate_result = val_dn.validate(get_subject_dict(csr))
         validate_result.errors.sort()
@@ -127,40 +136,36 @@ def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
             for error in validate_result.errors:
                 print(error)
             return 1
-
         # !SECTION - Validating
 
         # SECTION - Passwordhandling
         pwd_man = PasswordManager(private_dir=args.private_dir)
-        pass_phrase = pwd_man.decrypt_password_file(args.passphrasefile, 
-                                                    getpass.getpass("Enter Password:"))
-        
+        pass_phrase = pwd_man.decrypt_password_file(
+            args.passphrasefile, getpass.getpass("Enter Password:")
+        )
         # !SECTION - Passwordhandling
+
         # SECTION - Signing
-        private_key_obj= load_private_key_from_pem(
-                pem_data = Path(args.private_key).read_bytes(), 
-                passphrase=pass_phrase)
-        cert_signer = CertificateSigner(
-        ca_cert=ca_cert,
-        ca_key=private_key_obj)
+        private_key_obj = load_private_key_from_pem(
+            pem_data=Path(args.private_key).read_bytes(), passphrase=pass_phrase
+        )
+        cert_signer = CertificateSigner(ca_cert=ca_cert, ca_key=private_key_obj)
         policy_select = {
-            "intermediate": IntermediatePolicy(pathlength = args.path_length),
+            "intermediate": IntermediatePolicy(pathlength=args.path_length),
             "standalone": StandalonePolicy(),
             "user": UserPolicy(),
             "client": ClientPolicy(),
             "server": ServerPolicy(),
-            }
+        }
         policy = policy_select[args.policy_type]
         validity_days = validate_and_clamp_validity(ca_cert, args.validity_days)
 
-        signed_cert = cert_signer.sign(csr=csr, 
-        policy=policy, 
-        validity_days=validity_days.actual_days,
-        **extention)
-
+        signed_cert = cert_signer.sign(
+            csr=csr, policy=policy, validity_days=validity_days.actual_days, **extention
+        )
         # !SECTION - Signing
+
         # SECTION - Transferfile
-        # TODO - Zertifikate überprüfen
         zipped_data = encrypt_transport_package(
             signed_cert,  # user_cert
             ca_cert,  # root_ca_cert
@@ -169,15 +174,18 @@ def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
             signed_cert,
             ca_cert,
         )
-        transfer_file_path:Path = Path(args.certificat_sign_request).with_suffix(".zip.enc")
+        transfer_file_path = Path(args.certificat_sign_request).with_suffix(".zip.enc")
         transfer_file_path.write_bytes(zipped_data)
         # !SECTION - Transferfile
+
         return 0
     except KeyboardInterrupt:
         return 1
     except Exception as e:
         print(e)
         return 1
+
+
 # !SECTION - Programm Signing
 
 
@@ -194,7 +202,7 @@ if __name__ == "__main__":  # pragma: no cover
     # Pfad zu den dokumentierenden Tests
     testfiles_dir = Path(__file__).parents[3] / "doc/source/devel"
     test_file = testfiles_dir / "get_started_programms.rst"
-    test_file = testfiles_dir / "get_started_prog_intermed_sign.rst"
+    # test_file = testfiles_dir / "get_started_prog_intermed_sign.rst"
 
     if test_file.exists():
         print(f"--- Running Doctest for {test_file.name} ---")

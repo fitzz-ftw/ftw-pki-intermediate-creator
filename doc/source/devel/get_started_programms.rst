@@ -53,8 +53,7 @@ The Certificat ASign Request Creation
 >>> ca_parser.set_defaults(**toml2dn(sys_argv))
 >>> args = ca_parser.parse_args(sys_argv)
 >>> args #doctest: +NORMALIZE_WHITESPACE +ELLIPSIS 
-Namespace(passphrasefile='testpasswd', 
-    countryName='DE', 
+Namespace(countryName='DE', 
     stateOrProvinceName='Mystate', 
     localityName='Somewherecity', 
     organizationName='Fitzz TeXnik Welt', 
@@ -69,7 +68,8 @@ Namespace(passphrasefile='testpasswd',
     conf_file=PosixPath('ca_root_conf.toml'), 
     private_key='reinsha.key.pem', 
     public_key='reinsha.pub.pem', 
-    privatdir='privat')
+    privatdir='privat',
+    passphrasefile='testpasswd')
 
 .. !SECTION
 
