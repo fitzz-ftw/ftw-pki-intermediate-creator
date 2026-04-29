@@ -6,8 +6,7 @@
 protocols
 ===============================
 
-
-Modul protocols documentation
+Structural interfaces for the Intermediate CA package. (ro)
 """
 
 from pathlib import Path
@@ -15,25 +14,36 @@ from pathlib import Path
 from ftwpki.baselibs.protocols import CSRProtocol
 
 
+# CLASS - CSRIntermediateProtocol
 class CSRIntermediateProtocol(CSRProtocol):
+    """
+    Structural interface for Intermediate CSR creation. (ro)
+
+    Extends the base CSRProtocol to include specific requirements for
+    intermediate authority requests.
+    """
+
     passphrasefile: str
+    """Path to the encrypted secret file containing the CA passphrase."""
 
 
+# !CLASS - CSRIntermediateProtocol
 
-if __name__ == "__main__": # pragma: no cover
+
+if __name__ == "__main__":  # pragma: no cover
     from doctest import FAIL_FAST, testfile
-    
+
     be_verbose = False
     be_verbose = True
     option_flags = 0
     option_flags = FAIL_FAST
     test_sum = 0
     test_failed = 0
-    
+
     # Pfad zu den dokumentierenden Tests
     testfiles_dir = Path(__file__).parents[3] / "doc/source/devel"
     test_file = testfiles_dir / "get_started_protocols.rst"
-    
+
     if test_file.exists():
         print(f"--- Running Doctest for {test_file.name} ---")
         doctestresult = testfile(
