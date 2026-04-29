@@ -43,7 +43,7 @@ class CSRIntermediateParser(CSRParser):
         :returns: Parsed arguments adhering to the protocol.
         """
         return cast(CSRIntermediateProtocol, super().parse_args(args, namespace))
-
+# !CLASS - CSRIntermediateParser
 
 if __name__ == "__main__":  # pragma: no cover
     from doctest import FAIL_FAST, testfile
