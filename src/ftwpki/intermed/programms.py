@@ -30,7 +30,7 @@ from ftwpki.baselibs.policies import (
     ClientPolicy,
     IntermediatePolicy,
     ServerPolicy,
-    StandalonePolicy,
+    ClientServerPolicy,
     UserPolicy,
 )
 from ftwpki.baselibs.request import CertificateRequest
@@ -152,7 +152,7 @@ def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
         cert_signer = CertificateSigner(ca_cert=ca_cert, ca_key=private_key_obj)
         policy_select = {
             "intermediate": IntermediatePolicy(pathlength=args.path_length),
-            "standalone": StandalonePolicy(),
+            "standalone": ClientServerPolicy(),
             "user": UserPolicy(),
             "client": ClientPolicy(),
             "server": ServerPolicy(),

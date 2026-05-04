@@ -198,7 +198,7 @@ Enter Password:
 
 >>> from ftwpki.baselibs.policies import IntermediatePolicy
 
->>> from ftwpki.baselibs.policies import StandalonePolicy
+>>> from ftwpki.baselibs.policies import ClientServerPolicy
 
 >>> from ftwpki.baselibs.policies import UserPolicy
 
@@ -208,7 +208,7 @@ Enter Password:
 
 >>> policy_select = {
 ...       "intermediate": IntermediatePolicy(pathlength = args.path_length),
-...       "standalone": StandalonePolicy(),
+...       "standalone": ClientServerPolicy(),
 ...       "user": UserPolicy(),
 ...       "client": ClientPolicy(),
 ...       "server": ServerPolicy(),
@@ -217,7 +217,7 @@ Enter Password:
 >>> policy = policy_select[args.policy_type]
 
 >>> policy
-StandalonePolicy()
+ClientServerPolicy()
 
 
 
