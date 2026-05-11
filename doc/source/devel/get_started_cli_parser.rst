@@ -41,3 +41,12 @@ Namespace(countryName='',
     privatdir='',
     passphrasefile='passwort.txt')
 
+
+>>> from ftwpki.intermed.cli_parser import get_csr_intermed_parser
+>>> get_csr_intermed_parser() #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+CSRIntermediateParser(prog='...', 
+    usage=None, 
+    description='...', 
+    formatter_class=<class 'argparse.HelpFormatter'>, 
+    conflict_handler='error', 
+    add_help=True)

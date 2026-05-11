@@ -28,9 +28,9 @@ from ftwpki.baselibs.core import (
 from ftwpki.baselibs.passwd import PasswordManager
 from ftwpki.baselibs.policies import (
     ClientPolicy,
+    ClientServerPolicy,
     IntermediatePolicy,
     ServerPolicy,
-    ClientServerPolicy,
     UserPolicy,
 )
 from ftwpki.baselibs.request import CertificateRequest
@@ -44,7 +44,7 @@ from ftwpki.baselibs.transport import encrypt_transport_package
 from ftwpki.baselibs.validate import ValidatorDN, validate_and_clamp_validity
 from ftwpki.intermed.cli_parser import CSRIntermediateParser
 
-
+# SECTION - Programm Create CSR
 def prog_intermediate_csr(argv: list[str] | None = None) -> int:
     """
     Main entry point for generating an Intermediate CA CSR. (rw)
@@ -53,6 +53,7 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
     :returns: Exit code (0 for success, 1 for error).
     """
     try:
+        # SECTION - Configuration
         ca_parser = CSRIntermediateParser(prog="ftwpkicsrinter")
         ca_parser.set_defaults(**toml2dn(argv))
         args = ca_parser.parse_args(argv)
@@ -65,11 +66,13 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
             common_name=args.commonName,
             organizational_unit=args.organizationalUnitName,
         )
-
+        # !SECTION - Configuration
+        # SECTION - CSR Creation
         reins_csr = CertificateRequest(
             subject=subject,
             policy=IntermediatePolicy(),
         )
+        #SECTION - Passwordhandling
         priv, pub = generate_rsa_key_pair(
             passphrase=pwd_man.decrypt_password_file(
                 encrypted_filename=args.passphrasefile,
@@ -79,6 +82,7 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
         )
         save_pem(priv, Path(f"{args.privatdir}/{args.private_key}"), is_private=True)
         save_pem(pub, Path(f"{args.public_key}"), is_private=False)
+        # !SECTION - Passwordhandling
 
         save_pem(
             reins_csr.build(
@@ -94,14 +98,18 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
             is_private=False,
         )
         return 0
+        # !SECTION - CSR Creation
     except KeyboardInterrupt:
         return 1
     except Exception as e:
         print(e)
         return 1
 
+# !SECTION - Programm Create CSR
+
 
 # SECTION - Programm Signing
+
 def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
     """
     Entry point for signing requests using an Intermediate CA. (rw)

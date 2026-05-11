@@ -45,6 +45,20 @@ class CSRIntermediateParser(CSRParser):
         return cast(CSRIntermediateProtocol, super().parse_args(args, namespace))
 # !CLASS - CSRIntermediateParser
 
+#FUNCTION - get_csr_intermed_parser()
+def get_csr_intermed_parser() -> CSRIntermediateParser:
+    """
+    Factory function to create and return a configured CSRIntermediateParser instance. (ro)
+
+    :returns: An instance of CSRIntermediateParser.
+    """
+    parser = CSRIntermediateParser(
+        prog="ftwpkiintermedcsr",
+        description="Create a Certificate Signing Request (CSR) for an Intermediate CA.",
+    )
+    return parser
+# !FUNCTION - get_csr_intermed_parser()
+
 if __name__ == "__main__":  # pragma: no cover
     from doctest import FAIL_FAST, testfile
 
