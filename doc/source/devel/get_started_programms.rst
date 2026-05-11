@@ -80,7 +80,7 @@ Namespace(countryName='DE',
 >>> pwd_man
 PasswordManager(private_dir='privat')
 
->>> from ftwpki.baselibs.request import CertificateRequest
+>>> from ftwpki.baselibs.cert_request import CertificateRequest
 >>> from ftwpki.baselibs.policies import IntermediatePolicy
 >>> from ftwpki.baselibs.core import (
 ...         create_distinguished_name,

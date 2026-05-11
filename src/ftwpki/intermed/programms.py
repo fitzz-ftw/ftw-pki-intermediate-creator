@@ -33,7 +33,7 @@ from ftwpki.baselibs.policies import (
     ServerPolicy,
     UserPolicy,
 )
-from ftwpki.baselibs.request import CertificateRequest
+from ftwpki.baselibs.cert_request import CertificateRequest
 from ftwpki.baselibs.signer import CertificateSigner
 from ftwpki.baselibs.toml_utils import (
     toml2dn,
