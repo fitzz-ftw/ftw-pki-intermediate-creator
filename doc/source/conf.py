@@ -214,7 +214,7 @@ def setup(app):
 
 
 # -- Project information -----------------------------------------------------
-project = "FTW PKI Intermediate Certificates Tools"
+project = "FTW PKI Intermediate Certificates Request Tool"
 copyright = "2026, Fitzz TeΧnik Welt"
 author = "Fitzz TeΧnik Welt"
 html_show_copyright = True
@@ -442,7 +442,7 @@ autosummary_context.update(class_extention_context)
 coverage_statistics_to_stdout = True
 coverage_show_missing_items = True
 coverage_modules = [
-    "ftwpki.intermed"
+    "ftwpki.intermed_creator"
 ]
 
 # NOTE - This list uses REGULAR EXPRESSIONS, not shell-style globs.

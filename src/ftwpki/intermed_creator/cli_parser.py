@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import cast
 
 from ftwpki.baselibs.cli_parser import CSRParser
-from ftwpki.intermed.protocols import CSRIntermediateProtocol
+from ftwpki.intermed_creator.protocols import CSRIntermediateProtocol
 
 
 # CLASS - CSRIntermediateParser

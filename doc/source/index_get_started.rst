@@ -13,4 +13,3 @@ supported Python versions (3.11 - 3.15).
    devel/get_started_cli_parser
    devel/get_started_programms
    devel/get_started_protocols
-   devel/get_started_prog_intermed_sign

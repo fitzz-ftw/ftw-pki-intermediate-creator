@@ -4,6 +4,6 @@ Protocols
 
 >>> from typing import Protocol
 
->>> from ftwpki.intermed.protocols import CSRIntermediateProtocol
+>>> from ftwpki.intermed_creator.protocols import CSRIntermediateProtocol
 
 

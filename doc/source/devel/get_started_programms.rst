@@ -47,7 +47,7 @@ The Certificat ASign Request Creation
 .. SECTION - Configuration
 
 >>> from ftwpki.baselibs.toml_utils import toml2dn
->>> from ftwpki.intermed.cli_parser import CSRIntermediateParser
+>>> from ftwpki.intermed_creator.cli_parser import CSRIntermediateParser
 
 >>> ca_parser = CSRIntermediateParser(prog="ftwpkicsrinter")
 >>> ca_parser.set_defaults(**toml2dn(sys_argv))
