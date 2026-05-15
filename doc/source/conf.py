@@ -22,7 +22,7 @@ if not html_baseurl:
 
 
 try:
-    from ftwpki.intermed._version import __version__
+    from ftwpki.intermed_creator._version import __version__
     version = __version__
     release = __version__
 except ImportError:

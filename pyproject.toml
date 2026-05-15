@@ -12,7 +12,11 @@ namespaces = true
 where = ["src"]
 
 [tool.setuptools_scm]
-tag_regex = '^(?P<prefix>v)?(?P<version>[^\+|-]+)(?P<suffix>-test)?$'
+# Erläuterung:
+# ^v               -> Muss mit 'v' beginnen
+# (?P<version>...) -> Die Versionsnummer (0.0.1)
+# (?P<suffix>...)  -> Optionaler Anhang wie -test, a1, .rc1
+tag_regex = '^v(?P<version>[^\+|-]+)(?P<suffix>[-._][a-zA-Z0-9]+)?$'
 write_to = "src/ftwpki/intermed/_version.py"
 
 [project]
@@ -31,7 +35,7 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = ["ftw-pki-libs"]
-description = ""
+description = "A specialized tool for creating Certificate Signing Requests (CSR) for Intermediate Certificate Authorities within the ftw-pki suite."
 dynamic = ["version"]
 name = "ftw-pki-intermediate-creator"
 readme = "README.md"
@@ -39,10 +43,12 @@ requires-python = ">=3.11"
 license = "LGPL-2.1-or-later"
 
 [project.urls]
-# Documentation = "https://ftw-patch.readthedocs.io/en/stable/"
-# Homepage = "https://github.com/fitzz-ftw/ftw-patch"
-# Issues = "https://github.com/fitzz-ftw/ftw-patch/issues"
-# Repository = "https://github.com/fitzz-ftw/ftw-patch.git"
+Homepage = "https://github.com/fitzz-ftw/ftw-pki-intermediate-creator"
+# Documentation = "https://ftw-pki-intermediate-creator.readthedocs.io/"
+Documentation = "https://github.com/fitzz-ftw/ftw-pki-intermediate-creator/blob/main/README.md"
+Repository = "https://github.com/fitzz-ftw/ftw-pki-intermediate-creator.git"
+Issues = "https://github.com/fitzz-ftw/ftw-pki-intermediate-creator/issues"
+Changelog = "https://github.com/fitzz-ftw/ftw-pki-intermediate-creator/blob/main/CHANGELOG.md"
 
 [project.scripts]
 ftwpkiintermedcsr = "ftwpki.intermed_creator.programms:prog_intermediate_csr"

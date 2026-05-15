@@ -55,3 +55,4 @@ git_dif*
 _build
 doc/source/conf.py
 git-diff.txt
+git-log.txt

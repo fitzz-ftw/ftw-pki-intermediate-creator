@@ -122,7 +122,8 @@ def test_prog_intermediate_csr_error(tmp_path):
 def test_prog_intermediate_csr_keyboard_interrupt(mocker):
     # Wir mocken den allerersten Aufruf in der Funktion,
     # damit er sofort einen KeyboardInterrupt wirft.
-    mocker.patch("ftwpki.intermed_creator.programms.CSRIntermediateParser", side_effect=KeyboardInterrupt)
+    mocker.patch("ftwpki.intermed_creator.programms.CSRIntermediateParser", 
+                 side_effect=KeyboardInterrupt)
 
     # Der Aufruf der Funktion muss nun den abgefangenen Fehler
     # mit Returncode 1 quittieren.
