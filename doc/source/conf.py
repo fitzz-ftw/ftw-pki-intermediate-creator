@@ -285,7 +285,6 @@ toc_object_entries_show_parents = "hide"
 # -- Options for Intersphinx
 intersphinx_mapping = {
     "python": (f"https://docs.python.org/{sys.version_info.major}.{sys.version_info.minor}", None),
-    "platformdirs": ("https://platformdirs.readthedocs.io/en/latest/", None),
 }
 
 #SECTION - Options for ePub output -------------------------------------------------

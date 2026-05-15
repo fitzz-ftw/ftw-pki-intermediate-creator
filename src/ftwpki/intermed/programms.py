@@ -14,6 +14,7 @@ from pathlib import Path
 
 from cryptography import x509
 
+from ftwpki.baselibs.cert_request import CertificateRequest
 from ftwpki.baselibs.cli_parser import CSRMultiSigningParser, cast
 from ftwpki.baselibs.core import (
     create_csr_name,
@@ -33,7 +34,6 @@ from ftwpki.baselibs.policies import (
     ServerPolicy,
     UserPolicy,
 )
-from ftwpki.baselibs.cert_request import CertificateRequest
 from ftwpki.baselibs.signer import CertificateSigner
 from ftwpki.baselibs.toml_utils import (
     toml2dn,
@@ -43,6 +43,7 @@ from ftwpki.baselibs.toml_utils import (
 from ftwpki.baselibs.transport import encrypt_transport_package
 from ftwpki.baselibs.validate import ValidatorDN, validate_and_clamp_validity
 from ftwpki.intermed.cli_parser import CSRIntermediateParser
+
 
 # SECTION - Programm Create CSR
 def prog_intermediate_csr(argv: list[str] | None = None) -> int:
@@ -72,7 +73,7 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
             subject=subject,
             policy=IntermediatePolicy(),
         )
-        #SECTION - Passwordhandling
+        # SECTION - Passwordhandling
         priv, pub = generate_rsa_key_pair(
             passphrase=pwd_man.decrypt_password_file(
                 encrypted_filename=args.passphrasefile,
@@ -105,10 +106,12 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
         print(e)
         return 1
 
+
 # !SECTION - Programm Create CSR
 
 
 # SECTION - Programm Signing
+
 
 def prog_intermediate_sign(argv: list[str] | None = None, **kwargs) -> int:
     """
