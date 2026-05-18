@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3a2] - 2026-05-18
+
+### Fixed
+- Make internal documentation doctests fully platform-independent to ensure consistent verification passes across POSIX and non-POSIX development environments.
+
+### Changed
+- Finalize project metadata structures and align repository workflows for cleaner package building.
+
+
 ## [0.0.3a1] - 2026-05-15
 
 ### Added
