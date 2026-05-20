@@ -10,9 +10,11 @@ Main entry points for Intermediate CA operations. (rw)
 """
 
 import getpass
+import shutil
 from pathlib import Path
 
 from ftwpki.baselibs.cert_request import CertificateRequest
+from ftwpki.baselibs.configuration import IntermedPKIConfig
 from ftwpki.baselibs.core import (
     create_csr_name,
     create_distinguished_name,
@@ -40,10 +42,25 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
     """
     try:
         # SECTION - Configuration
+        config: IntermedPKIConfig = IntermedPKIConfig()
+        config.set_config("intermed")
+
         ca_parser = CSRIntermediateParser(prog="ftwpkicsrinter")
         ca_parser.set_defaults(**toml2dn(argv))
         args = ca_parser.parse_args(argv)
-        pwd_man = PasswordManager(private_dir=args.privatdir)
+        # SECTION - Copy passphrasefile
+        in_priv: bool = (config.config_path / args.privatdir / args.passphrasefile).is_file()
+        in_cwd: bool = Path(args.passphrasefile).is_file()
+        if in_cwd and not in_priv:
+            shutil.move(
+                Path(args.passphrasefile), config.config_path / args.privatdir / args.passphrasefile
+            )
+        # !SECTION - Copy passphrasefile
+        # !SECTION - Configuration
+        # SECTION - Passwordhandling
+        pwd_man = PasswordManager(private_dir=str(config.config_path / args.privatdir))
+        # !SECTION - Passwordhandling
+        # SECTION - CSR Creation
         subject = create_distinguished_name(
             country=args.countryName,
             state=args.stateOrProvinceName,
@@ -52,13 +69,12 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
             common_name=args.commonName,
             organizational_unit=args.organizationalUnitName,
         )
-        # !SECTION - Configuration
-        # SECTION - CSR Creation
         reins_csr = CertificateRequest(
             subject=subject,
             policy=IntermediatePolicy(),
         )
-        # SECTION - Passwordhandling
+        # SECTION - CSR Creation
+        # SECTION - Keypair Creation
         priv, pub = generate_rsa_key_pair(
             passphrase=pwd_man.decrypt_password_file(
                 encrypted_filename=args.passphrasefile,
@@ -66,9 +82,10 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
             ),
             key_size=4096,
         )
-        save_pem(priv, Path(f"{args.privatdir}/{args.private_key}"), is_private=True)
-        save_pem(pub, Path(f"{args.public_key}"), is_private=False)
-        # !SECTION - Passwordhandling
+        # !SECTION - Keypair Creation
+        # SECTION - Save Keys and CSR
+        save_pem(priv, config.config_path / f"{args.privatdir}/{args.private_key}", is_private=True)
+        save_pem(pub, config.data_path / f"{args.public_key}", is_private=False)
 
         save_pem(
             reins_csr.build(
@@ -83,8 +100,8 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
             Path(create_csr_name(args.organizationName, args.localityName)),
             is_private=False,
         )
+        # !SECTION - Save Keys and CSR
         return 0
-        # !SECTION - CSR Creation
     except KeyboardInterrupt:
         return 1
     except Exception as e:
