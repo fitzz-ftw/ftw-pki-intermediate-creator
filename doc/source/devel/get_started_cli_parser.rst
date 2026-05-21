@@ -22,10 +22,11 @@ Namespace(countryName='',
     commonName='', 
     dnsubject={}, 
     conf_file=None, 
-    private_key='', 
-    public_key='', 
+    key_name='', 
     privatdir='',
-    passphrasefile='passwort.txt')
+    passphrasefile='passwort.txt',
+    private_key='',
+    public_key='')
 
 >>> cip.parse_args(["-subj", "/CN=Test" ,"passwort.txt"]) #doctest: +NORMALIZE_WHITESPACE
 Namespace(countryName='', 
@@ -36,10 +37,11 @@ Namespace(countryName='',
     commonName='Test', 
     dnsubject={'commonName': 'Test'}, 
     conf_file=None, 
-    private_key='',
-    public_key='', 
+    key_name='', 
     privatdir='',
-    passphrasefile='passwort.txt')
+    passphrasefile='passwort.txt',
+    private_key='',
+    public_key='')
 
 
 >>> from ftwpki.intermed_creator.cli_parser import get_csr_intermed_parser

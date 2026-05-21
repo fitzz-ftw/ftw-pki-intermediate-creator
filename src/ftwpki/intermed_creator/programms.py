@@ -45,16 +45,18 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
         config: IntermedPKIConfig = IntermedPKIConfig()
         config.set_config("intermed")
 
-        ca_parser = CSRIntermediateParser(prog="ftwpkicsrinter")
+        ca_parser = CSRIntermediateParser(prog="ftwpkiintermedcsr")
         ca_parser.set_defaults(**toml2dn(argv))
         args = ca_parser.parse_args(argv)
         # SECTION - Copy passphrasefile
-        in_priv: bool = (config.config_path / args.privatdir / args.passphrasefile).is_file()
-        in_cwd: bool = Path(args.passphrasefile).is_file()
-        if in_cwd and not in_priv:
+        ppf_in_priv: bool = (config.config_path / args.privatdir / args.passphrasefile).is_file()
+        ppf_in_cwd: bool = Path(args.passphrasefile).is_file()
+        if ppf_in_cwd and not ppf_in_priv:
             shutil.move(
                 Path(args.passphrasefile), config.config_path / args.privatdir / args.passphrasefile
             )
+        elif ppf_in_cwd:
+            Path(args.passphrasefile).unlink(True)
         # !SECTION - Copy passphrasefile
         # !SECTION - Configuration
         # SECTION - Passwordhandling
@@ -127,6 +129,7 @@ if __name__ == "__main__":  # pragma: no cover
     # Pfad zu den dokumentierenden Tests
     testfiles_dir = Path(__file__).parents[3] / "doc/source/devel"
     test_file = testfiles_dir / "get_started_programms.rst"
+    test_file = testfiles_dir / "get_started_run_programms.rst"
     # test_file = testfiles_dir / "get_started_prog_intermed_sign.rst"
 
     if test_file.exists():

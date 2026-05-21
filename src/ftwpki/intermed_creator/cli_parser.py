@@ -29,7 +29,9 @@ class CSRIntermediateParser(CSRParser):
         """
         super()._setup_parser()
         self.add_argument(
-            "passphrasefile", help="Filename of the encrypted secret for the intermediate key."
+            "passphrasefile", 
+            metavar="passphrase-file",
+            help="Filename of the encrypted secret for the intermediate key."
         )
 
     def parse_args(

@@ -25,19 +25,18 @@ The Certificat ASign Request Creation
 ...     print(prompt)
 ...     return "strenggeheim"
 
->>> cmd_line="--conf_file ca_root_conf.toml -ST Mystate --commonName 'Fitzz Reinshagen' "
->>> cmd_line += " -k reinsha.key.pem -p reinsha.pub.pem "
+>>> cmd_line="--conf-file ca_root_conf.toml -ST Mystate --commonName 'Fitzz Reinshagen' "
+>>> cmd_line += " -k reinsha "
 >>> cmd_line += " --private-dir .private"
 >>> cmd_line += " testpasswd"
 
 >>> import shlex
 >>> sys_argv= shlex.split(cmd_line) 
 >>> sys_argv #doctest: +NORMALIZE_WHITESPACE
-['--conf_file', 'ca_root_conf.toml', 
+['--conf-file', 'ca_root_conf.toml', 
  '-ST', 'Mystate', 
  '--commonName', 'Fitzz Reinshagen',
- '-k', 'reinsha.key.pem',
- '-p', 'reinsha.pub.pem', 
+ '-k', 'reinsha',
  '--private-dir', '.private',
  'testpasswd']
 
@@ -71,11 +70,12 @@ Namespace(countryName='DE',
         'commonName': 'Fitzz Reinshagen', 
         'localityName': 'Somewherecity', 
         'organizationalUnitName': 'Security'}, 
-    conf_file=PosixPath('ca_root_conf.toml'), 
-    private_key='reinsha.key.pem', 
-    public_key='reinsha.pub.pem', 
+    conf_file=PosixPath('ca_root_conf.toml'),
+    key_name='reinsha', 
     privatdir='.private',
-    passphrasefile='testpasswd')
+    passphrasefile='testpasswd', 
+    private_key='reinsha.key.pem', 
+    public_key='reinsha.pub.pem')
 
 ..SECTION - Copy passphrasefile
 
@@ -185,12 +185,9 @@ Enter Passphrase:
 
 .. !SECTION - Stop programm
 
-
-
-
 .. SECTION - Teardown
 
->> env.clean_home()
+>>> env.clean_home()
 >>> env.teardown()
 
 .. !SECTION

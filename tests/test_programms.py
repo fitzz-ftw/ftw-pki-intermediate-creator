@@ -12,6 +12,7 @@ def test_prog_intermediate_csr_success(tmp_path):
     priv_dir.mkdir()
 
     # Absolute Pfade oder klare Dateinamen für -k und -p
+    key_name = "intermediate"
     key_file = "intermediate.key.pem"
     pub_file = "intermediate.pub.pem"
 
@@ -27,9 +28,7 @@ def test_prog_intermediate_csr_success(tmp_path):
         "--private-dir",
         str(priv_dir),
         "-k",
-        key_file,
-        "-p",
-        pub_file,
+        key_name,
         "testpasswd.txt",
     ]
 
@@ -62,7 +61,7 @@ def test_prog_intermediate_csr_success(tmp_path):
         # 4. Validierung
         assert result == 0
         assert (priv_dir / key_file).exists()
-        assert (tmp_path / pub_file).exists()
+        assert not (tmp_path / pub_file).exists()
         # Der CSR Name wird von create_csr_name generiert (Test-OrgTest-City.csr)
         assert (tmp_path / "Test-Org-Test-City.csr").exists() or True
 
