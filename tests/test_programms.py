@@ -36,7 +36,7 @@ def test_prog_intermediate_csr_success(tmp_path):
     with (
         patch("ftwpki.intermed_creator.programms.getpass.getpass", return_value="geheim"),
         patch(
-            "ftwpki.intermed_creator.programms.toml2dn",
+            "ftwpki.intermed_creator.programms.toml2_dn",
             return_value={
                 "countryName": "DE",
                 "organizationName": "Default Org",
@@ -94,7 +94,7 @@ def test_prog_intermediate_csr_error(tmp_path):
         patch("ftwpki.intermed_creator.programms.getpass.getpass", return_value="geheim"),
         # Der Mock sollte Daten liefern, die ein echtes TOML liefern würde
         patch(
-            "ftwpki.intermed_creator.programms.toml2dn",
+            "ftwpki.intermed_creator.programms.toml2_dn",
             return_value={
                 "countryName": "DE",
                 "organizationName": "Default Org",
