@@ -14,6 +14,7 @@ import shutil
 from pathlib import Path
 
 from ftwpki.baselibs.cert_request import CertificateRequest
+from ftwpki.baselibs.cli_parser import TomlPreParser
 from ftwpki.baselibs.configuration import IntermedPKIConfig
 from ftwpki.baselibs.core import (
     create_csr_name,
@@ -28,6 +29,7 @@ from ftwpki.baselibs.policies import (
 )
 from ftwpki.baselibs.toml_utils import (
     toml2_dn,
+    toml2dn,
 )
 from ftwpki.intermed_creator.cli_parser import CSRIntermediateParser
 
@@ -42,11 +44,14 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
     """
     try:
         # SECTION - Configuration
+        pre_parser = TomlPreParser()
+        pre_args, _ = pre_parser.parse_known_args(argv)
         config: IntermedPKIConfig = IntermedPKIConfig()
         config.set_config("intermed")
 
         ca_parser = CSRIntermediateParser(prog="ftwpkiintermedcsr")
-        ca_parser.set_defaults(**toml2_dn(argv))
+        ca_parser.set_defaults(**toml2dn(pre_args.conf_file))
+        # ca_parser.set_defaults(**toml2_dn(argv))
         args = ca_parser.parse_args(argv)
         # SECTION - Copy passphrasefile
         ppf_in_priv: bool = (config.config_path / args.privatdir / args.passphrasefile).is_file()
@@ -99,7 +104,7 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
                     ),
                 )
             ).get_pem(),
-            Path(create_csr_name(args.organizationName, args.localityName)),
+            Path(create_csr_name(args.commonName, args.localityName)),
             is_private=False,
         )
         # !SECTION - Save Keys and CSR

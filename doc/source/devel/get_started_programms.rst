@@ -46,16 +46,28 @@ The Certificat ASign Request Creation
 
 .. SECTION - Configuration
 
->>> from ftwpki.baselibs.toml_utils import toml2_dn
+>>> from ftwpki.baselibs.toml_utils import toml2_dn, toml2dn
 >>> from ftwpki.intermed_creator.cli_parser import CSRIntermediateParser
+>>> from ftwpki.baselibs.cli_parser import TomlPreParser
 
 >>> from ftwpki.baselibs.configuration import IntermedPKIConfig
+
+>>> pre_parser = TomlPreParser()
+>>> pre_args , _ = pre_parser.parse_known_args(sys_argv)
+
+>>> pre_conf = toml2dn(pre_args.conf_file)
+
 
 >>> config:IntermedPKIConfig = IntermedPKIConfig()
 >>> config.set_config()
 
 >>> ca_parser = CSRIntermediateParser(prog="ftwpkicsrinter")
->>> ca_parser.set_defaults(**toml2_dn(sys_argv))
+
+>>> ca_parser.set_defaults(**pre_conf)
+
+
+>> ca_parser.set_defaults(**toml2_dn(sys_argv))
+
 >>> args = ca_parser.parse_args(sys_argv)
 >>> args #doctest: +NORMALIZE_WHITESPACE +ELLIPSIS 
 Namespace(countryName='DE', 
