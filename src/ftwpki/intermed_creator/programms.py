@@ -15,7 +15,7 @@ from pathlib import Path
 
 from ftwpki.baselibs.cert_request import CertificateRequest
 from ftwpki.baselibs.cli_parser import TomlPreParser
-from ftwpki.baselibs.configuration import IntermedPKIConfig
+from ftwpki.baselibs.configuration import IntermedPKIConfig, IntermedPKIConfig_DEV
 from ftwpki.baselibs.core import (
     create_csr_name,
     create_distinguished_name,
@@ -23,15 +23,15 @@ from ftwpki.baselibs.core import (
     load_private_key_from_pem,
     save_pem,
 )
+from ftwpki.baselibs.package import PKIPackage
 from ftwpki.baselibs.passwd import PasswordManager
 from ftwpki.baselibs.policies import (
     IntermediatePolicy,
 )
 from ftwpki.baselibs.toml_utils import (
-    toml2_dn,
     toml2dn,
 )
-from ftwpki.intermed_creator.cli_parser import CSRIntermediateParser
+from ftwpki.intermed_creator.cli_parser import CSRIntermediateParser, CSRIntermediateParser_DEV
 
 
 # SECTION - Programm Create CSR
@@ -114,42 +114,144 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
     except Exception as e:
         print(e)
         return 1
-
-
 # !SECTION - Programm Create CSR
 
+# SECTION - Programm Create CSR DEV
+def prog_intermediate_csr_DEV(argv: list[str] | None = None) -> int:
+    """
+    Main entry point for generating an Intermediate CA CSR. (rw)
 
+    :param argv: Optional list of command-line arguments.
+    :returns: Exit code (0 for success, 1 for error).
+    """
+    try:
+        # SECTION - Configuration
+        pre_parser = pre_parser = CSRIntermediateParser_DEV(add_help=False, allow_abbrev=False)
+        pre_args, _ = pre_parser.parse_known_args(argv)
+        pki_name = Path(pre_args.conf_file).stem
+        pre_conf = toml2dn(pre_args.conf_file)
+        pre_conf["pki_name"] = pki_name
+        ca_parser = CSRIntermediateParser_DEV()
+        ca_parser.set_defaults(**pre_conf)
+        args = ca_parser.parse_args(argv)
+        config: IntermedPKIConfig_DEV = IntermedPKIConfig_DEV()
+
+       # SECTION - Copy passphrasefile
+        ppf_in_priv: bool = (config.passphrases / args.passphrasefile).is_file()
+        ppf_in_cwd: bool = Path(args.passphrasefile).is_file()
+        if ppf_in_cwd and not ppf_in_priv:
+            shutil.move(Path(args.passphrasefile), config.passphrases / args.passphrasefile)
+        elif ppf_in_cwd:
+            Path(args.passphrasefile).unlink(True)
+        # !SECTION - Copy passphrasefile
+        # !SECTION - Configuration
+        # SECTION - Passwordhandling
+        pwd_man = PasswordManager(private_dir=str(config.passphrases))
+        # !SECTION - Passwordhandling
+        # SECTION - CSR Creation
+        subject = create_distinguished_name(
+            country=args.countryName,
+            state=args.stateOrProvinceName,
+            location=args.localityName,
+            organization=args.organizationName,
+            common_name=args.commonName,
+            organizational_unit=args.organizationalUnitName,
+        )
+        reins_csr = CertificateRequest(
+            subject=subject,
+            policy=IntermediatePolicy(),
+        )
+        # SECTION - CSR Creation
+        # SECTION - Keypair Creation
+        password =getpass.getpass("Enter Password:")
+        private_key, public_key = generate_rsa_key_pair(
+            passphrase=pwd_man.decrypt_password_file(
+                encrypted_filename=args.passphrasefile,
+                password=password,
+            ),
+            key_size=4096,
+        )
+        # !SECTION - Keypair Creation
+        # SECTION - Save CSR
+
+        csr_pem = reins_csr.build(
+                load_private_key_from_pem(
+                    pem_data=private_key,
+                    passphrase=pwd_man.decrypt_password_file(
+                        encrypted_filename=args.passphrasefile,
+                        password=password,
+                    ),
+                )
+            ).get_pem()
+        del password
+        save_pem(csr_pem, Path(f"{args.pki_name + '.csr'}"), is_private=False)
+        # !SECTION - Save  CSR
+        # SECTION - pki - Container
+        pki_pack = PKIPackage()
+        conf_file = Path(args.conf_file)
+        pki_pack.additional_files[f"{args.pki_name}.policy"] = conf_file.read_bytes()
+        pki_pack.additional_files["CA.key.pem"] = private_key
+        pki_file = pki_pack.save(config.passphrases / args.pki_name)
+        conf_file.unlink()
+        # !SECTION - pki- Container
+        return 0
+    except KeyboardInterrupt:
+        return 1
+    except BaseException as e:
+        print(e)
+        return 1
+
+
+# !SECTION - Programm Create CSR DEV
 
 
 if __name__ == "__main__":  # pragma: no cover
     from doctest import FAIL_FAST, testfile
 
     be_verbose = False
-    be_verbose = True
+    # be_verbose = True
     option_flags = 0
     option_flags = FAIL_FAST
     test_sum = 0
     test_failed = 0
+    passed_files = 0
 
     # Pfad zu den dokumentierenden Tests
     testfiles_dir = Path(__file__).parents[3] / "doc/source/devel"
-    test_file = testfiles_dir / "get_started_programms.rst"
-    test_file = testfiles_dir / "get_started_run_programms.rst"
+    # test_file = testfiles_dir / "get_started_programms.rst"
+    # test_file = testfiles_dir / "get_started_run_programms.rst"
     # test_file = testfiles_dir / "get_started_prog_intermed_sign.rst"
 
-    if test_file.exists():
-        print(f"--- Running Doctest for {test_file.name} ---")
-        doctestresult = testfile(
-            str(test_file),
-            module_relative=False,
-            verbose=be_verbose,
-            optionflags=option_flags,
-        )
-        test_failed += doctestresult.failed
-        test_sum += doctestresult.attempted
-        if test_failed == 0:
-            print(f"\nDocTests passed without errors, {test_sum} tests.")
+    test_files = [
+        # "get_started_programms.rst",
+        "get_started_programms_DEV.rst",
+        # "get_started_run_programms_DEV.rst",
+        # "get_started_run_programms.rst",
+    ]
+    for file in test_files:
+        test_file = testfiles_dir / file
+        if test_file.exists():
+            print(f"--- Running Doctest for {test_file.name} ---")
+            doctestresult = testfile(
+                str(test_file),
+                module_relative=False,
+                verbose=be_verbose,
+                optionflags=option_flags,
+            )
+            test_failed += doctestresult.failed
+            test_sum += doctestresult.attempted
+            if doctestresult.failed > 0 and option_flags & FAIL_FAST:
+                print(f"Doctest result for {test_file.name}: {doctestresult}")
+                print(
+                    f"\nKeep going! You already passed {passed_files} files "
+                    f"with {test_sum} tests before this hit."
+                )
+                break  # Stop on first failure if FAIL_FAST is set
+            passed_files += 1
         else:
-            print(f"\nDocTests failed: {test_failed} tests.")
+            print(f"⚠️ Warning: Test file {test_file.name} not found.")
+    if test_failed == 0:
+        print(f"\nDocTests passed without errors, {test_sum} tests.")
     else:
-        print(f"⚠️ Warning: Test file {test_file.name} not found.")
+        if not option_flags & FAIL_FAST:
+            print(f"\nDocTests failed: {test_failed} tests out of {test_sum}.")
