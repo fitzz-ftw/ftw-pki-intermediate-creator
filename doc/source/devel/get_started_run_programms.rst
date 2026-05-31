@@ -1,12 +1,9 @@
-The Certificat ASign Request Creation
-#########################################
-
-
+The Certificat ASign Request Creation Development
+##################################################
 
 
 .. SECTION - Setup
-
->>> import getpass
+>>> test_data_pre= "test_ok_data"
 
 >>> from fitzzftw.devtools.testinfra import TestHomeEnvironment
 >>> from pathlib import Path
@@ -18,50 +15,77 @@ The Certificat ASign Request Creation
 .. SECTION - Prepare
 
 >>> from pathlib import Path
->>> private_dir:Path = Path("privat")
->>> private_dir.mkdir(parents=True, exist_ok=True)
->>> test_paswd_path = env.copy2cwd("privat/testpasswd","testpasswd")
->>> conf_file = env.copy2cwd("ca_root_conf.toml")
 
->>> def getpasswd(prompt:str)->str:
+
+>>> test_paswd_path = env.copy2cwd(f"{test_data_pre}/inter1secret", "inter1secret")
+
+
+>>> conf_file = env.copy2cwd(f"{test_data_pre}/ca_intermed_hamburg_conf.toml", "ca_intermed_hamburg_conf.toml")
+
+>>> def stub_getpass(prompt:str)->str:
 ...     print(prompt)
-...     return "strenggeheim"
+...     return "secret"
 
->>> getpass.getpass = getpasswd
+>>> def stub_keyboard_interrupt(prompt:str)->str:
+...     print(prompt)
+...     raise KeyboardInterrupt
 
->>> cmd_line="--conf-file ca_root_conf.toml -ST Mystate --commonName 'Fitzz Reinshagen' "
->>> cmd_line += " -k reinsha "
->>> cmd_line += " --private-dir .private"
->>> cmd_line += " testpasswd"
+
+
+>>> cmd_line="--conf-file ca_intermed_hamburg_conf.toml"
+>>> cmd_line += " -k hamburg_ca "
+>>> cmd_line += " -n M-V-HH-CA "
+>>> cmd_line += " inter1secret"
 
 >>> import shlex
 >>> sys_argv= shlex.split(cmd_line) 
 >>> sys_argv #doctest: +NORMALIZE_WHITESPACE
-['--conf-file', 'ca_root_conf.toml', 
- '-ST', 'Mystate', 
- '--commonName', 'Fitzz Reinshagen',
- '-k', 'reinsha',
- '--private-dir', '.private',
- 'testpasswd']
+['--conf-file', 'ca_intermed_hamburg_conf.toml', 
+ '-k', 'hamburg_ca', 
+ '-n', 'M-V-HH-CA', 
+ 'inter1secret']
 
 ..!SECTION
+
+>>> import getpass
+
+>>> getpass.getpass = stub_getpass
 
 >>> from ftwpki.intermed_creator.programms import prog_intermediate_csr
 
 >>> prog_intermediate_csr(sys_argv)
-Enter Passphrase:
-Enter Passphrase:
+Enter Password:
 0
 
 
->>> conf_file = env.copy2cwd("ca_root_conf.toml")
+>>> test_paswd_path = env.copy2cwd(f"{test_data_pre}/inter1secret", "inter1secret")
 
->>> test_paswd_path = env.copy2cwd("privat/testpasswd","testpasswd")
+>> conf_file = env.copy2cwd(f"{test_data_pre}/ca_intermed_hamburg_conf.toml", "ca_intermed_hamburg_conf.toml")
+
 
 >>> prog_intermediate_csr(sys_argv)
-Enter Passphrase:
-Enter Passphrase:
+[Errno 2] No such file or directory: 'ca_intermed_hamburg_conf.toml'
+1
+
+>>> conf_file = env.copy2cwd(f"{test_data_pre}/ca_intermed_hamburg_conf.toml", "ca_intermed_hamburg_conf.toml")
+>>> prog_intermediate_csr(sys_argv)
+Enter Password:
 0
+
+
+
+>>> conf_file = env.copy2cwd(f"{test_data_pre}/ca_intermed_hamburg_conf.toml", "ca_intermed_hamburg_conf.toml")
+>>> prog_intermediate_csr(sys_argv)
+Enter Password:
+0
+
+>>> getpass.getpass = stub_keyboard_interrupt
+
+>>> conf_file = env.copy2cwd(f"{test_data_pre}/ca_intermed_hamburg_conf.toml", "ca_intermed_hamburg_conf.toml")
+>>> prog_intermediate_csr(sys_argv)
+Enter Password:
+1
+
 
 
 .. SECTION - Teardown

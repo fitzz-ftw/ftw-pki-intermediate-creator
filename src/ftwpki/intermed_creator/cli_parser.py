@@ -13,12 +13,12 @@ from argparse import Namespace
 from pathlib import Path
 from typing import cast
 
-from ftwpki.baselibs.cli_parser import CSRParser, CSRParser_DEV
+from ftwpki.baselibs.cli_parser import CSRParser
 from ftwpki.intermed_creator.protocols import CSRIntermediateProtocol
 
 
-# CLASS - CSRIntermediateParser_DEV
-class CSRIntermediateParser_DEV(CSRParser_DEV):
+# CLASS - CSRIntermediateParser
+class CSRIntermediateParser(CSRParser):
     """
     CLI parser for creating Intermediate CA signing requests. (rw)
     """
@@ -45,40 +45,9 @@ class CSRIntermediateParser_DEV(CSRParser_DEV):
         :returns: Parsed arguments adhering to the protocol.
         """
         return cast(CSRIntermediateProtocol, super().parse_args(args, namespace))
-# !CLASS - CSRIntermediateParser_DEV
-
-# CLASS - CSRIntermediateParser
-class CSRIntermediateParser(CSRParser):
-    """
-    CLI parser for creating Intermediate CA signing requests. (rw)
-    """
-
-    def _setup_parser(self) -> None:
-        """
-        Configure the parser with intermediate-specific arguments. (ro)
-        """
-        super()._setup_parser()
-        self.add_argument(
-            "passphrasefile",
-            metavar="passphrase-file",
-            help="Filename of the encrypted secret for the intermediate key.",
-        )
-
-    def parse_args(
-        self, args: list[str] | None = None, namespace: Namespace | None = None
-    ) -> CSRIntermediateProtocol:
-        """
-        Parse arguments and cast to CSRIntermediateProtocol. (ro)
-
-        :param args: Optional list of argument strings.
-        :param namespace: Optional Namespace object.
-        :returns: Parsed arguments adhering to the protocol.
-        """
-        return cast(CSRIntermediateProtocol, super().parse_args(args, namespace))
-
-
 # !CLASS - CSRIntermediateParser
 
+# FIXME- CSRIntermediateParser
 
 #FUNCTION - get_csr_intermed_parser()
 def get_csr_intermed_parser() -> CSRIntermediateParser:

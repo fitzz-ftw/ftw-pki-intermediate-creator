@@ -15,7 +15,7 @@ from pathlib import Path
 
 from ftwpki.baselibs.cert_request import CertificateRequest
 from ftwpki.baselibs.cli_parser import TomlPreParser
-from ftwpki.baselibs.configuration import IntermedPKIConfig, IntermedPKIConfig_DEV
+from ftwpki.baselibs.configuration import IntermedPKIConfig
 from ftwpki.baselibs.core import (
     create_csr_name,
     create_distinguished_name,
@@ -31,10 +31,11 @@ from ftwpki.baselibs.policies import (
 from ftwpki.baselibs.toml_utils import (
     toml2dn,
 )
-from ftwpki.intermed_creator.cli_parser import CSRIntermediateParser, CSRIntermediateParser_DEV
+from ftwpki.intermed_creator.cli_parser import CSRIntermediateParser
 
 
-# SECTION - Programm Create CSR
+# FIXME - Programm Create CSR
+# SECTION - Programm Create CSR DEV
 def prog_intermediate_csr(argv: list[str] | None = None) -> int:
     """
     Main entry point for generating an Intermediate CA CSR. (rw)
@@ -44,97 +45,15 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
     """
     try:
         # SECTION - Configuration
-        pre_parser = TomlPreParser()
-        pre_args, _ = pre_parser.parse_known_args(argv)
-        config: IntermedPKIConfig = IntermedPKIConfig()
-        config.set_config("intermed")
-
-        ca_parser = CSRIntermediateParser(prog="ftwpkiintermedcsr")
-        ca_parser.set_defaults(**toml2dn(pre_args.conf_file))
-        # ca_parser.set_defaults(**toml2_dn(argv))
-        args = ca_parser.parse_args(argv)
-        # SECTION - Copy passphrasefile
-        ppf_in_priv: bool = (config.config_path / args.privatdir / args.passphrasefile).is_file()
-        ppf_in_cwd: bool = Path(args.passphrasefile).is_file()
-        if ppf_in_cwd and not ppf_in_priv:
-            shutil.move(
-                Path(args.passphrasefile), config.config_path / args.privatdir / args.passphrasefile
-            )
-        elif ppf_in_cwd:
-            Path(args.passphrasefile).unlink(True)
-        # !SECTION - Copy passphrasefile
-        # !SECTION - Configuration
-        # SECTION - Passwordhandling
-        pwd_man = PasswordManager(private_dir=str(config.config_path / args.privatdir))
-        # !SECTION - Passwordhandling
-        # SECTION - CSR Creation
-        subject = create_distinguished_name(
-            country=args.countryName,
-            state=args.stateOrProvinceName,
-            location=args.localityName,
-            organization=args.organizationName,
-            common_name=args.commonName,
-            organizational_unit=args.organizationalUnitName,
-        )
-        reins_csr = CertificateRequest(
-            subject=subject,
-            policy=IntermediatePolicy(),
-        )
-        # SECTION - CSR Creation
-        # SECTION - Keypair Creation
-        priv, pub = generate_rsa_key_pair(
-            passphrase=pwd_man.decrypt_password_file(
-                encrypted_filename=args.passphrasefile,
-                password=getpass.getpass("Enter Passphrase:"),
-            ),
-            key_size=4096,
-        )
-        # !SECTION - Keypair Creation
-        # SECTION - Save Keys and CSR
-        save_pem(priv, config.config_path / f"{args.privatdir}/{args.private_key}", is_private=True)
-        save_pem(pub, config.data_path / f"{args.public_key}", is_private=False)
-
-        save_pem(
-            reins_csr.build(
-                load_private_key_from_pem(
-                    pem_data=priv,
-                    passphrase=pwd_man.decrypt_password_file(
-                        encrypted_filename=args.passphrasefile,
-                        password=getpass.getpass("Enter Passphrase:"),
-                    ),
-                )
-            ).get_pem(),
-            Path(create_csr_name(args.commonName, args.localityName)),
-            is_private=False,
-        )
-        # !SECTION - Save Keys and CSR
-        return 0
-    except KeyboardInterrupt:
-        return 1
-    except Exception as e:
-        print(e)
-        return 1
-# !SECTION - Programm Create CSR
-
-# SECTION - Programm Create CSR DEV
-def prog_intermediate_csr_DEV(argv: list[str] | None = None) -> int:
-    """
-    Main entry point for generating an Intermediate CA CSR. (rw)
-
-    :param argv: Optional list of command-line arguments.
-    :returns: Exit code (0 for success, 1 for error).
-    """
-    try:
-        # SECTION - Configuration
-        pre_parser = pre_parser = CSRIntermediateParser_DEV(add_help=False, allow_abbrev=False)
+        pre_parser = pre_parser = CSRIntermediateParser(add_help=False, allow_abbrev=False)
         pre_args, _ = pre_parser.parse_known_args(argv)
         pki_name = Path(pre_args.conf_file).stem
-        pre_conf = toml2dn(pre_args.conf_file)
+        pre_conf = toml2dn(Path(pre_args.conf_file).read_text())
         pre_conf["pki_name"] = pki_name
-        ca_parser = CSRIntermediateParser_DEV()
+        ca_parser = CSRIntermediateParser()
         ca_parser.set_defaults(**pre_conf)
         args = ca_parser.parse_args(argv)
-        config: IntermedPKIConfig_DEV = IntermedPKIConfig_DEV()
+        config: IntermedPKIConfig = IntermedPKIConfig()
 
        # SECTION - Copy passphrasefile
         ppf_in_priv: bool = (config.passphrases / args.passphrasefile).is_file()
@@ -191,7 +110,7 @@ def prog_intermediate_csr_DEV(argv: list[str] | None = None) -> int:
         conf_file = Path(args.conf_file)
         pki_pack.additional_files[f"{args.pki_name}.policy"] = conf_file.read_bytes()
         pki_pack.additional_files["CA.key.pem"] = private_key
-        pki_file = pki_pack.save(config.passphrases / args.pki_name)
+        pki_pack.save(config.passphrases / args.pki_name)
         conf_file.unlink()
         # !SECTION - pki- Container
         return 0
@@ -223,10 +142,8 @@ if __name__ == "__main__":  # pragma: no cover
     # test_file = testfiles_dir / "get_started_prog_intermed_sign.rst"
 
     test_files = [
-        # "get_started_programms.rst",
-        "get_started_programms_DEV.rst",
-        # "get_started_run_programms_DEV.rst",
-        # "get_started_run_programms.rst",
+        "get_started_programms.rst",
+        "get_started_run_programms.rst",
     ]
     for file in test_files:
         test_file = testfiles_dir / file
