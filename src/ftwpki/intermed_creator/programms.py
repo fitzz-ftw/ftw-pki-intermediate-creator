@@ -11,13 +11,12 @@ Main entry points for Intermediate CA operations. (rw)
 
 import getpass
 import shutil
+import traceback
 from pathlib import Path
 
 from ftwpki.baselibs.cert_request import CertificateRequest
-from ftwpki.baselibs.cli_parser import TomlPreParser
 from ftwpki.baselibs.configuration import IntermedPKIConfig
 from ftwpki.baselibs.core import (
-    create_csr_name,
     create_distinguished_name,
     generate_rsa_key_pair,
     load_private_key_from_pem,
@@ -34,8 +33,7 @@ from ftwpki.baselibs.toml_utils import (
 from ftwpki.intermed_creator.cli_parser import CSRIntermediateParser
 
 
-# FIXME - Programm Create CSR
-# SECTION - Programm Create CSR DEV
+# SECTION - Programm Create CSR
 def prog_intermediate_csr(argv: list[str] | None = None) -> int:
     """
     Main entry point for generating an Intermediate CA CSR. (rw)
@@ -47,9 +45,11 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
         # SECTION - Configuration
         pre_parser = pre_parser = CSRIntermediateParser(add_help=False, allow_abbrev=False)
         pre_args, _ = pre_parser.parse_known_args(argv)
-        pki_name = Path(pre_args.conf_file).stem
-        pre_conf = toml2dn(Path(pre_args.conf_file).read_text())
-        pre_conf["pki_name"] = pki_name
+        pre_conf =  {}
+        if pre_args.conf_file:
+            pki_name = Path(pre_args.conf_file).stem
+            pre_conf = toml2dn(Path(pre_args.conf_file).read_text())
+            pre_conf["pki_name"] = pki_name
         ca_parser = CSRIntermediateParser()
         ca_parser.set_defaults(**pre_conf)
         args = ca_parser.parse_args(argv)
@@ -117,18 +117,19 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
     except KeyboardInterrupt:
         return 1
     except BaseException as e:
+        traceback.print_exc()
         print(e)
         return 1
 
 
-# !SECTION - Programm Create CSR DEV
+# !SECTION - Programm Create CSR
 
 
 if __name__ == "__main__":  # pragma: no cover
     from doctest import FAIL_FAST, testfile
 
     be_verbose = False
-    # be_verbose = True
+    be_verbose = True
     option_flags = 0
     option_flags = FAIL_FAST
     test_sum = 0
@@ -142,7 +143,7 @@ if __name__ == "__main__":  # pragma: no cover
     # test_file = testfiles_dir / "get_started_prog_intermed_sign.rst"
 
     test_files = [
-        "get_started_programms.rst",
+        # "get_started_programms.rst",
         "get_started_run_programms.rst",
     ]
     for file in test_files:

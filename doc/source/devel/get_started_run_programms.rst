@@ -86,6 +86,16 @@ Enter Password:
 Enter Password:
 1
 
+>>> cmd_line = " -k hamburg_ca "
+>>> cmd_line += " -n M-V-HH-CA "
+>>> cmd_line += " inter1secret"
+
+>>> import shlex
+>>> sys_argv= shlex.split(cmd_line) 
+>>> prog_intermediate_csr(sys_argv)
+the following arguments are required: --conf-file
+1
+
 
 
 .. SECTION - Teardown

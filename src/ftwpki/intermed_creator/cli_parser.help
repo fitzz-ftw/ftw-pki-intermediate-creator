@@ -1,0 +1,3 @@
+[intermedcsr]
+[intermedcsr.passphrasefile]
+en = "Filename of the encrypted secret containing the passphrase for the intermediate key."
