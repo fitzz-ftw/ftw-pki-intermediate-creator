@@ -6,7 +6,7 @@ Comand Line Parser
 
 >>> cip = CSRIntermediateParser()
 >>> cip #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-CSRIntermediateParser(prog=..., 
+PKIBaseParser(prog='...', 
     usage=None, 
     description=None, 
     formatter_class=<class 'argparse.HelpFormatter'>, 
@@ -21,53 +21,42 @@ argparse.ArgumentError: the following arguments are required: --conf-file, -k/--
 >>> required = ["-k","testkey", "--conf-file", "Testfile.toml"]
 
 >>> cip.parse_args(required + ["passwort.txt"]) #doctest: +NORMALIZE_WHITESPACE
-Namespace(countryName='', 
-    stateOrProvinceName='', 
-    localityName='', 
-    organizationName='', 
-    organizationalUnitName='', 
-    commonName='', 
-    dnsubject={}, 
-    conf_file=PosixPath('Testfile.toml'), 
-    key_name='testkey',
-    pki_name='',
-    privatdir='',
-    passphrasefile='passwort.txt',
-    private_key='testkey.key.pem', 
-    public_key='testkey.pub.pem')
+CSRIntermediateArguments(commonName=''
+    conf_file='Testfile.toml'
+    countryName=''
+    dnsubject={}
+    key_name='testkey'
+    localityName=''
+    organizationName=''
+    organizationalUnitName=''
+    passphrasefile='passwort.txt'
+    pki_name=''
+    privatdir=''
+    stateOrProvinceName='')
 
 >>> cip.parse_args(required + ["-subj", "/CN=Test" ,"passwort.txt"]) #doctest: +NORMALIZE_WHITESPACE
-Namespace(countryName='', 
-    stateOrProvinceName='', 
-    localityName='', 
-    organizationName='', 
-    organizationalUnitName='', 
-    commonName='Test', 
-    dnsubject={'commonName': 'Test'}, 
-    conf_file=PosixPath('Testfile.toml'), 
-    key_name='testkey',
-    pki_name='',
-    privatdir='',
-    passphrasefile='passwort.txt',
-    private_key='testkey.key.pem', 
-    public_key='testkey.pub.pem')
+CSRIntermediateArguments(commonName='Test'
+    conf_file='Testfile.toml'
+    countryName=''
+    dnsubject={'commonName': 'Test'}
+    key_name='testkey'
+    localityName=''
+    organizationName=''
+    organizationalUnitName=''
+    passphrasefile='passwort.txt'
+    pki_name=''
+    privatdir=''
+    stateOrProvinceName='')
 
 
 >>> from ftwpki.intermed_creator.cli_parser import get_csr_intermed_parser
 >>> get_csr_intermed_parser() #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-CSRIntermediateParser(prog='...', 
+PKIBaseParser(prog='ftwpkiintermedcsr', 
     usage=None, 
-    description='...', 
+    description='Create a Certificate Signing Request (CSR) for an 
+                    Intermediate CA.', 
     formatter_class=<class 'argparse.HelpFormatter'>, 
     conflict_handler='error', 
     add_help=True)
 
 
->>> cip = CSRIntermediateParser(run_setup=False)
->>> cip #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-CSRIntermediateParser(prog=..., 
-    usage=None, 
-    description=None, 
-    formatter_class=<class 'argparse.HelpFormatter'>, 
-    conflict_handler='error', 
-    add_help=True)

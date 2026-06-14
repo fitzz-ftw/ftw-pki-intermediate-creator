@@ -35,3 +35,22 @@ commonName = "supplied"
 localityName = "match"
 organizationalUnitName = "optional"
 stateOrProvinceName = "optional"
+
+[policy.server.dn]
+# Regeln für direkte Endzertifikate, falls Hamburg mal direkt eins ausstellen würde
+countryName = "match"
+organizationName = "match"
+commonName = "supplied"
+localityName = "match"
+organizationalUnitName = "optional"
+stateOrProvinceName = "optional"
+
+[policy.client.dn]
+# Regeln für direkte Endzertifikate, falls Hamburg mal direkt eins ausstellen würde
+countryName = "match"
+organizationName = "match"
+commonName = "supplied"
+localityName = "match"
+organizationalUnitName = "optional"
+stateOrProvinceName = "optional"
+

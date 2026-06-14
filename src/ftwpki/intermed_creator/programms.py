@@ -11,9 +11,9 @@ Main entry points for Intermediate CA operations. (rw)
 
 import getpass
 import shutil
-import traceback
 from pathlib import Path
 
+from ftwpki.baselibs._cli_parser import PKIBaseParser
 from ftwpki.baselibs.cert_request import CertificateRequest
 from ftwpki.baselibs.configuration import IntermedPKIConfig
 from ftwpki.baselibs.core import (
@@ -30,7 +30,10 @@ from ftwpki.baselibs.policies import (
 from ftwpki.baselibs.toml_utils import (
     toml2dn,
 )
-from ftwpki.intermed_creator.cli_parser import CSRIntermediateParser
+from ftwpki.intermed_creator.cli_parser import (
+    CSRInt,
+    CSRIntermediateParser,
+)
 
 
 # SECTION - Programm Create CSR
@@ -43,14 +46,18 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
     """
     try:
         # SECTION - Configuration
-        pre_parser = pre_parser = CSRIntermediateParser(add_help=False, allow_abbrev=False)
+        pre_parser: PKIBaseParser[CSRInt] = CSRIntermediateParser(
+             add_help=False, allow_abbrev=False
+        )
         pre_args, _ = pre_parser.parse_known_args(argv)
         pre_conf =  {}
         if pre_args.conf_file:
             pki_name = Path(pre_args.conf_file).stem
             pre_conf = toml2dn(Path(pre_args.conf_file).read_text())
             pre_conf["pki_name"] = pki_name
-        ca_parser = CSRIntermediateParser()
+        ca_parser: PKIBaseParser[CSRInt] = CSRIntermediateParser(
+            
+        )
         ca_parser.set_defaults(**pre_conf)
         args = ca_parser.parse_args(argv)
         config: IntermedPKIConfig = IntermedPKIConfig()
@@ -117,7 +124,7 @@ def prog_intermediate_csr(argv: list[str] | None = None) -> int:
     except KeyboardInterrupt:
         return 1
     except BaseException as e:
-        traceback.print_exc()
+        # traceback.print_exc()
         print(e)
         return 1
 
@@ -138,13 +145,12 @@ if __name__ == "__main__":  # pragma: no cover
 
     # Pfad zu den dokumentierenden Tests
     testfiles_dir = Path(__file__).parents[3] / "doc/source/devel"
-    # test_file = testfiles_dir / "get_started_programms.rst"
-    # test_file = testfiles_dir / "get_started_run_programms.rst"
-    # test_file = testfiles_dir / "get_started_prog_intermed_sign.rst"
 
     test_files = [
-        # "get_started_programms.rst",
+        "get_started_programms.rst",
         "get_started_run_programms.rst",
+        "get_started_run_programms_infra.rst",
+        "get_started_run_programms_member.rst",
     ]
     for file in test_files:
         test_file = testfiles_dir / file

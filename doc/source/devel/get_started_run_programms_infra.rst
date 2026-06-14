@@ -3,7 +3,7 @@ The Certificat ASign Request Creation Development
 
 
 .. SECTION - Setup
->>> test_data_pre= "data-inter-base-creator"
+>>> test_data_pre= "data-inter-infra-creator"
 
 >>> from fitzzftw.devtools.testinfra import TestHomeEnvironment
 >>> from pathlib import Path
@@ -17,10 +17,10 @@ The Certificat ASign Request Creation Development
 >>> from pathlib import Path
 
 
->>> test_paswd_path = env.copy2cwd(f"{test_data_pre}/inter1secret", "inter1secret")
+>>> test_paswd_path = env.copy2cwd(f"{test_data_pre}/infrasecret", "infrasecret")
 
 
->>> conf_file = env.copy2cwd(f"{test_data_pre}/ca_intermed_hamburg_conf.toml", "ca_intermed_hamburg_conf.toml")
+>>> conf_file = env.copy2cwd(f"{test_data_pre}/M-V-HH-Infra-CA.toml", "M-V-HH-Infra-CA.toml")
 
 >>> def stub_getpass(prompt:str)->str:
 ...     print(prompt)
@@ -32,18 +32,18 @@ The Certificat ASign Request Creation Development
 
 
 
->>> cmd_line="--conf-file ca_intermed_hamburg_conf.toml"
+>>> cmd_line="--conf-file M-V-HH-Infra-CA.toml"
 >>> cmd_line += " -k hamburg_ca "
 >>> cmd_line += " -n M-V-HH-CA "
->>> cmd_line += " inter1secret"
+>>> cmd_line += " infrasecret"
 
 >>> import shlex
 >>> sys_argv= shlex.split(cmd_line) 
 >>> sys_argv #doctest: +NORMALIZE_WHITESPACE
-['--conf-file', 'ca_intermed_hamburg_conf.toml', 
+['--conf-file', 'M-V-HH-Infra-CA.toml', 
  '-k', 'hamburg_ca', 
  '-n', 'M-V-HH-CA', 
- 'inter1secret']
+ 'infrasecret']
 
 ..!SECTION
 
@@ -58,37 +58,37 @@ Enter Password:
 0
 
 
->>> test_paswd_path = env.copy2cwd(f"{test_data_pre}/inter1secret", "inter1secret")
+>>> test_paswd_path = env.copy2cwd(f"{test_data_pre}/infrasecret", "infrasecret")
 
->> conf_file = env.copy2cwd(f"{test_data_pre}/ca_intermed_hamburg_conf.toml", "ca_intermed_hamburg_conf.toml")
+>> conf_file = env.copy2cwd(f"{test_data_pre}/M-V-HH-Infra-CA.toml", "M-V-HH-Infra-CA.toml")
 
 
 >>> prog_intermediate_csr(sys_argv)
-[Errno 2] No such file or directory: 'ca_intermed_hamburg_conf.toml'
+[Errno 2] No such file or directory: 'M-V-HH-Infra-CA.toml'
 1
 
->>> conf_file = env.copy2cwd(f"{test_data_pre}/ca_intermed_hamburg_conf.toml", "ca_intermed_hamburg_conf.toml")
+>>> conf_file = env.copy2cwd(f"{test_data_pre}/M-V-HH-Infra-CA.toml", "M-V-HH-Infra-CA.toml")
 >>> prog_intermediate_csr(sys_argv)
 Enter Password:
 0
 
 
 
->>> conf_file = env.copy2cwd(f"{test_data_pre}/ca_intermed_hamburg_conf.toml", "ca_intermed_hamburg_conf.toml")
+>>> conf_file = env.copy2cwd(f"{test_data_pre}/M-V-HH-Infra-CA.toml", "M-V-HH-Infra-CA.toml")
 >>> prog_intermediate_csr(sys_argv)
 Enter Password:
 0
 
 >>> getpass.getpass = stub_keyboard_interrupt
 
->>> conf_file = env.copy2cwd(f"{test_data_pre}/ca_intermed_hamburg_conf.toml", "ca_intermed_hamburg_conf.toml")
+>>> conf_file = env.copy2cwd(f"{test_data_pre}/M-V-HH-Infra-CA.toml", "M-V-HH-Infra-CA.toml")
 >>> prog_intermediate_csr(sys_argv)
 Enter Password:
 1
 
 >>> cmd_line = " -k hamburg_ca "
 >>> cmd_line += " -n M-V-HH-CA "
->>> cmd_line += " inter1secret"
+>>> cmd_line += " infrasecret"
 
 >>> import shlex
 >>> sys_argv= shlex.split(cmd_line) 

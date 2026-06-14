@@ -3,7 +3,7 @@ The Certificat ASign Request Creation Development
 
 
 .. SECTION - Setup
->>> test_data_pre= "test_ok_data"
+>>> test_data_pre= "data-inter-base-creator"
 
 >>> from fitzzftw.devtools.testinfra import TestHomeEnvironment
 >>> from pathlib import Path
@@ -68,24 +68,22 @@ The Certificat ASign Request Creation Development
 >>> args = ca_parser.parse_args(sys_argv)
 
 >>> args #doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
-Namespace(countryName='DE', 
-    stateOrProvinceName='', 
-    localityName='Hamburg', 
-    organizationName='Muster-Verband e.V.', 
-    organizationalUnitName='Regionalverband Nord', 
-    commonName='Muster-Verband Hamburg Regional CA', 
+CSRIntermediateArguments(commonName='Muster-Verband Hamburg Regional CA'
+    conf_file='ca_intermed_hamburg_conf.toml'
+    countryName='DE'
     dnsubject={'countryName': 'DE', 
-        'organizationName': 'Muster-Verband e.V.', 
-        'commonName': 'Muster-Verband Hamburg Regional CA', 
         'localityName': 'Hamburg', 
-        'organizationalUnitName': 'Regionalverband Nord'}, 
-    conf_file=PosixPath('ca_intermed_hamburg_conf.toml'), 
-    key_name='hamburg_ca', 
-    pki_name='M-V-HH-CA', 
-    privatdir='', 
-    passphrasefile='inter1secret', 
-    private_key='hamburg_ca.key.pem', 
-    public_key='hamburg_ca.pub.pem')
+        'organizationName': 'Muster-Verband e.V.', 
+        'organizationalUnitName': 'Regionalverband Nord', 
+        'commonName': 'Muster-Verband Hamburg Regional CA'}
+    key_name='hamburg_ca'
+    localityName='Hamburg'
+    organizationName='Muster-Verband e.V.'
+    organizationalUnitName='Regionalverband Nord'
+    passphrasefile='inter1secret'
+    pki_name='M-V-HH-CA'
+    privatdir=''
+    stateOrProvinceName='')
 
 >>> config:IntermedPKIConfig = IntermedPKIConfig()
 
@@ -196,7 +194,6 @@ b'-----BEGIN PUBLIC KEY---...
 .. SECTION - Save CSR
 
 >>> from ftwpki.baselibs.core import save_pem
-
 
 >>> csr_pem = reins_csr.build(load_private_key_from_pem(
 ...    pem_data=private_key, 

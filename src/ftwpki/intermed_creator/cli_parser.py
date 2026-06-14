@@ -9,12 +9,15 @@ cli_parser
 Parser for Intermediate CA Certificate Signing Requests (CSR). (rw)
 """
 
-from argparse import Namespace
 from pathlib import Path
-from typing import cast
+from typing import TypeAlias, TypeVar
 
-from ftwpki.baselibs.cli_parser import _HELP, CSRParser, load_help_entries
-from ftwpki.intermed_creator.protocols import CSRIntermediateProtocol
+from ftwpki.baselibs._cli_parser import (
+    _HELP,
+    CSRArguments,
+    load_help_entries,
+    parser_factory_creator,
+)
 
 HELP_FILE = Path(__file__).parent.joinpath("cli_parser.help")
 
@@ -22,52 +25,32 @@ load_help_entries(_HELP, HELP_FILE)
 
 LANG="en"
 
-# CLASS - CSRIntermediateParser
-class CSRIntermediateParser(CSRParser):
-    """
-    CLI parser for creating Intermediate CA signing requests. (rw)
-    """
+# print(_HELP)
+class CSRIntermediateArguments(CSRArguments):
+    __slots__ = ["passphrasefile"]
+    helpid = ["intermedcsr"]
+    arg_data = {"passphrasefile":{
+                    "flags":[],
+                    "kws":{"metavar":"passphrase-file",},
+                    "pre":{"nargs":"?"},
+                    },
+                }
+    def __init__(self) -> None:
+        super().__init__()
+        self.passphrasefile:str=""
 
-    def __init__(self, *args, run_setup=True, **kwargs) -> None:
-        """
-        Initialize the CaInitParser instance. (ro)
+CSRInt: TypeAlias = CSRIntermediateArguments
 
-        Calls the base class constructor and sets up the argument
-        parser with Root-CA specific options.
-        """
-        super().__init__(*args, run_setup=False, **kwargs)
-        self._help.update("intermedcsr")
-        if run_setup:
-            self._setup_parser()
+csr_intermediate_parser = parser_factory_creator(CSRIntermediateArguments)
 
-    def _setup_parser(self) -> None:
-        """
-        Configure the parser with intermediate-specific arguments. (ro)
-        """
-        super()._setup_parser()
-        self.add_argument(
-            "passphrasefile",
-            metavar="passphrase-file",
-            nargs="?" if self._preparser else None,
-            help="Filename of the encrypted secret for the intermediate key.",
-        )
-
-    def parse_args(
-        self, args: list[str] | None = None, namespace: Namespace | None = None
-    ) -> CSRIntermediateProtocol:
-        """
-        Parse arguments and cast to CSRIntermediateProtocol. (ro)
-
-        :param args: Optional list of argument strings.
-        :param namespace: Optional Namespace object.
-        :returns: Parsed arguments adhering to the protocol.
-        """
-        return cast(CSRIntermediateProtocol, super().parse_args(args, namespace))
-# !CLASS - CSRIntermediateParser
+def CSRIntermediateParser(**kwargs):
+    return parser_factory_creator(CSRIntermediateArguments)(**kwargs)
 
 
-#FUNCTION - get_csr_intermed_parser()
-def get_csr_intermed_parser() -> CSRIntermediateParser:
+
+
+# FUNCTION - get_csr_intermed_parser()
+def get_csr_intermed_parser() :
     """
     Factory function to create and return a configured CSRIntermediateParser instance. (ro)
 
@@ -95,7 +78,7 @@ if __name__ == "__main__":  # pragma: no cover
     testfiles_dir = Path(__file__).parents[3] / "doc/source/devel"
     test_files = [
         "test_new_parser.rst",
-        #   "get_started_cli_parser.rst",
+        "get_started_cli_parser.rst",
     ]
     for file in test_files:
         test_file = testfiles_dir / file

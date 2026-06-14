@@ -1,0 +1,35 @@
+[identity.dn]
+countryName = "DE"
+organizationName = "Muster-Verband e.V."
+commonName = "Muster-Verband Hamburg Member Issuing CA"
+localityName = "Hamburg"
+organizationalUnitName = "Mitgliederverwaltung"
+
+[policy.dn]
+countryName = "match"
+organizationName = "match"
+commonName = "supplied"
+localityName = "optional"           # Erlaubt Mitgliedern, z.B. im Hamburger Umland zu wohnen
+organizationalUnitName = "optional"
+stateOrProvinceName = "optional"
+
+[policy.ext]
+ocspURI = "http://ocsp.example.org/ham/members"
+crlURI = "http://pki.example.org/ham/members/people.crl"
+caIssuerURI = "http://pki.example.org/ham/regional.crt"
+
+[policy.intermediate.dn]
+localityName = "match"
+organizationalUnitName = "supplied"
+
+[policy.intermediate.ext]
+crlURI = "http://pki.example.org/invalid.crl"
+
+[policy.standalone.dn]
+# Regeln für User-Zertifikate und Personen-Clients
+countryName = "match"
+organizationName = "match"
+commonName = "supplied"
+localityName = "optional"           # Flexibel für den Wohnort des Mitglieds
+organizationalUnitName = "match"    # Muss "Mitgliederverwaltung" matchen oder optional sein
+stateOrProvinceName = "optional"
