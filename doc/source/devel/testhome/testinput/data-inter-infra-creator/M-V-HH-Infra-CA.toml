@@ -1,0 +1,38 @@
+[identity.dn]
+countryName = "DE"
+organizationName = "Muster-Verband e.V."
+commonName = "Muster-Verband Hamburg Systems Issuing CA"
+localityName = "Hamburg"
+organizationalUnitName = "Infrastruktur und Dienste"
+
+[policy.dn]
+# Validierung, wenn diese CA Anfragen prüft
+countryName = "match"
+organizationName = "match"
+commonName = "supplied"
+localityName = "match"              # Server müssen im Hamburger Verband gemeldet sein
+organizationalUnitName = "optional"
+stateOrProvinceName = "optional"
+
+[policy.ext]
+ocspURI = "http://ocsp.example.org/ham/infra"
+crlURI = "http://pki.example.org/ham/infra/systems.crl"
+caIssuerURI = "http://pki.example.org/ham/regional.crt"
+
+[policy.intermediate.dn]
+# Da path_length=0 via CLI gesetzt wird, ist diese Sektion hier praktisch inaktiv,
+# da diese CA keine weiteren Unter-CAs signieren darf.
+localityName = "match"
+organizationalUnitName = "supplied"
+
+[policy.intermediate.ext]
+crlURI = "http://pki.example.org/invalid.crl"
+
+[policy.standalone.dn]
+# Strikte Regeln für die Endzertifikate (Webserver / Clients)
+countryName = "match"
+organizationName = "match"
+commonName = "supplied"
+localityName = "match"
+organizationalUnitName = "optional"
+stateOrProvinceName = "optional"

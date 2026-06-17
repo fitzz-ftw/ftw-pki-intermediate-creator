@@ -9,44 +9,48 @@ cli_parser
 Parser for Intermediate CA Certificate Signing Requests (CSR). (rw)
 """
 
-from argparse import Namespace
 from pathlib import Path
-from typing import cast
+from typing import TypeAlias, TypeVar
 
-from ftwpki.baselibs.cli_parser import CSRParser
-from ftwpki.intermed_creator.protocols import CSRIntermediateProtocol
+from ftwpki.baselibs._cli_parser import (
+    _HELP,
+    CSRArguments,
+    load_help_entries,
+    parser_factory_creator,
+)
+
+HELP_FILE = Path(__file__).parent.joinpath("cli_parser.help")
+
+load_help_entries(_HELP, HELP_FILE)
+
+LANG="en"
+
+# print(_HELP)
+class CSRIntermediateArguments(CSRArguments):
+    __slots__ = ["passphrasefile"]
+    helpid = ["intermedcsr"]
+    arg_data = {"passphrasefile":{
+                    "flags":[],
+                    "kws":{"metavar":"passphrase-file",},
+                    "pre":{"nargs":"?"},
+                    },
+                }
+    def __init__(self) -> None:
+        super().__init__()
+        self.passphrasefile:str=""
+
+CSRInt: TypeAlias = CSRIntermediateArguments
+
+csr_intermediate_parser = parser_factory_creator(CSRIntermediateArguments)
+
+def CSRIntermediateParser(**kwargs):
+    return parser_factory_creator(CSRIntermediateArguments)(**kwargs)
 
 
-# CLASS - CSRIntermediateParser
-class CSRIntermediateParser(CSRParser):
-    """
-    CLI parser for creating Intermediate CA signing requests. (rw)
-    """
 
-    def _setup_parser(self) -> None:
-        """
-        Configure the parser with intermediate-specific arguments. (ro)
-        """
-        super()._setup_parser()
-        self.add_argument(
-            "passphrasefile", help="Filename of the encrypted secret for the intermediate key."
-        )
 
-    def parse_args(
-        self, args: list[str] | None = None, namespace: Namespace | None = None
-    ) -> CSRIntermediateProtocol:
-        """
-        Parse arguments and cast to CSRIntermediateProtocol. (ro)
-
-        :param args: Optional list of argument strings.
-        :param namespace: Optional Namespace object.
-        :returns: Parsed arguments adhering to the protocol.
-        """
-        return cast(CSRIntermediateProtocol, super().parse_args(args, namespace))
-# !CLASS - CSRIntermediateParser
-
-#FUNCTION - get_csr_intermed_parser()
-def get_csr_intermed_parser() -> CSRIntermediateParser:
+# FUNCTION - get_csr_intermed_parser()
+def get_csr_intermed_parser() :
     """
     Factory function to create and return a configured CSRIntermediateParser instance. (ro)
 
@@ -68,24 +72,38 @@ if __name__ == "__main__":  # pragma: no cover
     option_flags = FAIL_FAST
     test_sum = 0
     test_failed = 0
+    passed_files = 0
 
     # Pfad zu den dokumentierenden Tests
     testfiles_dir = Path(__file__).parents[3] / "doc/source/devel"
-    test_file = testfiles_dir / "get_started_cli_parser.rst"
-
-    if test_file.exists():
-        print(f"--- Running Doctest for {test_file.name} ---")
-        doctestresult = testfile(
-            str(test_file),
-            module_relative=False,
-            verbose=be_verbose,
-            optionflags=option_flags,
-        )
-        test_failed += doctestresult.failed
-        test_sum += doctestresult.attempted
-        if test_failed == 0:
-            print(f"\nDocTests passed without errors, {test_sum} tests.")
+    test_files = [
+        "test_new_parser.rst",
+        "get_started_cli_parser.rst",
+    ]
+    for file in test_files:
+        test_file = testfiles_dir / file
+        if test_file.exists():
+            print(f"--- Running Doctest for {test_file.name} ---")
+            doctestresult = testfile(
+                str(test_file),
+                module_relative=False,
+                verbose=be_verbose,
+                optionflags=option_flags,
+            )
+            test_failed += doctestresult.failed
+            test_sum += doctestresult.attempted
+            if doctestresult.failed > 0 and option_flags & FAIL_FAST:
+                print(f"Doctest result for {test_file.name}: {doctestresult}")
+                print(
+                    f"\nKeep going! You already passed {passed_files} files "
+                    f"with {test_sum} tests before this hit."
+                )
+                break  # Stop on first failure if FAIL_FAST is set
+            passed_files += 1
         else:
-            print(f"\nDocTests failed: {test_failed} tests.")
+            print(f"⚠️ Warning: Test file {test_file.name} not found.")
+    if test_failed == 0:
+        print(f"\nDocTests passed without errors, {test_sum} tests.")
     else:
-        print(f"⚠️ Warning: Test file {test_file.name} not found.")
+        if not option_flags & FAIL_FAST:
+            print(f"\nDocTests failed: {test_failed} tests out of {test_sum}.")

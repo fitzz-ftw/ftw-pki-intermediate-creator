@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+###### [0.0.4] - 2026-06-17
+
+###### Added
+- Introduce temporary DEV components and implement PKIPackage
+- Integrate TomlPreParser into intermediate CSR program
+
+###### Changed
+- Migrate CLI parser to factory pattern
+- Align intermediate CSR tool with unified key-name schema
+- Rename legacy TOML functions to modernize utility interfaces
+- Refactor CSR creation to use IntermedPKIConfig and secure passphrase handling
+- Adapt to streamlined baselibs
+
+###### Fixed
+- Integrate help system and improve parser robustness
+
+###### Testing
+- Reach 100% total coverage for intermediate creator components
+
+###### Documentation
+- Update documentation and remove obsolete parser rst files
+
 ## [0.0.3a2] - 2026-05-18
 
 ### Fixed

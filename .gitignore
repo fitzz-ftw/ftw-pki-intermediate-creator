@@ -54,5 +54,6 @@ git_dif*
 #Esbonio
 _build
 doc/source/conf.py
-git-diff.txt
+git-diff*.txt
 git-log.txt
+git-diff*.txt

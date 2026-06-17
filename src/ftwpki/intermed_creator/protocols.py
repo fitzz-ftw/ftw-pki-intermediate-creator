@@ -26,6 +26,11 @@ class CSRIntermediateProtocol(CSRProtocol):
     passphrasefile: str
     """Path to the encrypted secret file containing the CA passphrase."""
 
+    conf_file:str
+    """Path to the configuration file used for CSR generation."""
+
+    pki_name:str
+    """Name identifier for the PKI configuration."""
 
 # !CLASS - CSRIntermediateProtocol
 
