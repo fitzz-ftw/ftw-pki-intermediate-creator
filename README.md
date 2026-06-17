@@ -2,7 +2,7 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL_v2.1-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
-[![Coverage: 100%](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](#)
+[![Coverage: 100%](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)]
 
 A dedicated component of the **ftw-pki** suite focusing on the lifecycle and management of Intermediate Certificate Authorities. This repository provides the `ftwpkiintermedcsr` executable.
 
