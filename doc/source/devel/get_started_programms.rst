@@ -131,7 +131,7 @@ True
 >>> from ftwpki.baselibs.passwd import PasswordManager
 >>> pwd_man = PasswordManager(private_dir=str(config.passphrases))
 >>> pwd_man #doctest: +ELLIPSIS
-PasswordManager(private_dir='.../ftwpki/.private')
+PasswordManager(private_dir='...ftwpki....private')
 
 
 ..!SECTION - Passwordhandling
